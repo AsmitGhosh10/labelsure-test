@@ -1,0 +1,752 @@
+{
+  "schema_version": "1.0.0",
+  "name": "LabelGuard AI - Packaged Commodities Rules",
+  "description": "Machine-readable draft rule set derived from the user-provided English scan of The Legal Metrology (Packaged Commodities) Rules, 2011.",
+  "jurisdiction": "India",
+  "source_document": {
+    "title": "The Legal Metrology (Packaged Commodities) Rules, 2011",
+    "publication_date": "2011-03-07",
+    "source_type": "Government Gazette scan",
+    "source_file": "Legal_Metrology_Packaged_Commodities_2011_English.pdf",
+    "conversion_note": "Rules were extracted from a scanned PDF. Source page references point to the original Gazette pagination as visible in the supplied PDF.",
+    "legal_status": "ORIGINAL_2011_TEXT_DRAFT",
+    "verification_required": true
+  },
+  "engine_policy": {
+    "default_result_on_missing_evidence": "REVIEW",
+    "never_infer_applicability": true,
+    "never_invent_rule_text": true,
+    "preserve_exceptions": true,
+    "require_source_proof": true,
+    "llm_role": "extract_and_classify_evidence",
+    "rule_engine_role": "deterministic_evaluation",
+    "human_review_required_for_ambiguous_cases": true
+  },
+  "rules": [
+    {
+      "rule_id": "PC2011-R04-001",
+      "rule_reference": "Rule 4",
+      "title": "Declarations required before sale, distribution or delivery",
+      "category": "package_declarations",
+      "applicability": "Packages intended for sale, distribution or delivery under Chapter II.",
+      "requirement": "A pre-packed commodity must bear the declarations required under these Rules on the package or on a securely affixed label.",
+      "validation": {
+        "type": "REQUIRED_DECLARATIONS_PRESENT",
+        "logic": "package_has_required_declarations"
+      },
+      "severity": "HIGH",
+      "source": {
+        "document": "The Legal Metrology (Packaged Commodities) Rules, 2011",
+        "source_pdf_page": 42,
+        "rule_reference": "Rule 4",
+        "evidence_text": "no person shall pre-pack or cause or permit to be pre-packed any commodity for sale, distribution or delivery unless the package ... bears thereon ... such declarations as are required to be made under these rules."
+      },
+      "status": "DRAFT",
+      "verified": false
+    },
+    {
+      "rule_id": "PC2011-R05-001",
+      "rule_reference": "Rule 5",
+      "title": "Standard pack size for specified commodities",
+      "category": "standard_pack_size",
+      "applicability": "Commodities specified in the Second Schedule.",
+      "requirement": "Specified commodities must be packed in the standard quantities prescribed in the Second Schedule.",
+      "validation": {
+        "type": "SCHEDULE_LOOKUP",
+        "logic": "if product_is_listed_in_second_schedule_then_quantity_must_match_prescribed_standard_size"
+      },
+      "exception": {
+        "condition": "If packed in a non-prescribed size",
+        "required_declaration": "Not a standard pack size under the Legal Metrology (Packaged Commodities) Rules, 2011 or non standard size under the Legal Metrology (Packaged Commodities) Rules, 2011"
+      },
+      "severity": "HIGH",
+      "source": {
+        "document": "The Legal Metrology (Packaged Commodities) Rules, 2011",
+        "source_pdf_page": 42,
+        "rule_reference": "Rule 5",
+        "evidence_text": "The commodities specified in the Second Schedule shall be packed for sale, distribution or delivery in such standard quantities as are specified in that Schedule."
+      },
+      "status": "DRAFT",
+      "verified": false
+    },
+    {
+      "rule_id": "PC2011-R06-A-001",
+      "rule_reference": "Rule 6(1)(a)",
+      "title": "Manufacturer, packer and importer identity/address",
+      "category": "manufacturer_details",
+      "applicability": "Retail packages, subject to stated exceptions including food articles under the source's cited regime.",
+      "requirement": "Declare the name and address of the manufacturer; where manufacturer is not the packer, declare manufacturer and packer; for imported packages, declare importer name and address.",
+      "validation": {
+        "type": "FIELD_PRESENCE",
+        "fields": [
+          "manufacturer_name",
+          "manufacturer_address"
+        ],
+        "conditional_fields": [
+          "packer_name",
+          "packer_address",
+          "importer_name",
+          "importer_address"
+        ],
+        "logic": "required_party_details_must_be_detected_when_applicable"
+      },
+      "severity": "HIGH",
+      "source": {
+        "document": "The Legal Metrology (Packaged Commodities) Rules, 2011",
+        "source_pdf_page": 42,
+        "rule_reference": "Rule 6(1)(a)",
+        "evidence_text": "the name and address of the manufacturer, or where the manufacturer is not the packer, the name and address of the manufacturer and packer and for any imported package the name and address of the importer shall be mentioned"
+      },
+      "status": "DRAFT",
+      "verified": false
+    },
+    {
+      "rule_id": "PC2011-R06-B-001",
+      "rule_reference": "Rule 6(1)(b)",
+      "title": "Common or generic name of commodity",
+      "category": "commodity_identity",
+      "applicability": "Every package under Rule 6, subject to the source's stated exceptions.",
+      "requirement": "Declare the common or generic name of the commodity; where a package contains more than one product, state the name and number or quantity of each product.",
+      "validation": {
+        "type": "FIELD_PRESENCE",
+        "fields": [
+          "common_or_generic_name"
+        ],
+        "conditional": "multi_product_package"
+      },
+      "severity": "HIGH",
+      "source": {
+        "document": "The Legal Metrology (Packaged Commodities) Rules, 2011",
+        "source_pdf_page": 43,
+        "rule_reference": "Rule 6(1)(b)",
+        "evidence_text": "The common or generic names of the commodity contained in the package and in case of packages with more than one product, the name and number or quantity of each product shall be mentioned on the package."
+      },
+      "status": "DRAFT",
+      "verified": false
+    },
+    {
+      "rule_id": "PC2011-R06-C-001",
+      "rule_reference": "Rule 6(1)(c)",
+      "title": "Net quantity declaration",
+      "category": "net_quantity",
+      "applicability": "Every package where net quantity is required under the source rules.",
+      "requirement": "Declare the net quantity using the standard unit of weight or measure, or the number of items where the commodity is packed or sold by number.",
+      "validation": {
+        "type": "FIELD_PRESENCE_AND_UNIT",
+        "fields": [
+          "net_quantity",
+          "net_quantity_unit"
+        ],
+        "logic": "net_quantity_present_and_unit_is_permitted_for_declared_quantity_type"
+      },
+      "severity": "CRITICAL",
+      "source": {
+        "document": "The Legal Metrology (Packaged Commodities) Rules, 2011",
+        "source_pdf_page": 43,
+        "rule_reference": "Rule 6(1)(c)",
+        "evidence_text": "The net quantity, in terms of the standard unit of weight or measure ... or where the commodity is packed or sold by number, the number ... shall be mentioned."
+      },
+      "status": "DRAFT",
+      "verified": false
+    },
+    {
+      "rule_id": "PC2011-R06-D-001",
+      "rule_reference": "Rule 6(1)(d)",
+      "title": "Month and year of manufacture, pre-packing or import",
+      "category": "date_declaration",
+      "applicability": "Packages to which Rule 6(1)(d) applies, subject to the stated exclusions and sector-specific laws.",
+      "requirement": "Declare the month and year in which the commodity was manufactured, pre-packed or imported.",
+      "validation": {
+        "type": "FIELD_PRESENCE_AND_DATE_FORMAT",
+        "fields": [
+          "manufacture_month_year"
+        ],
+        "logic": "month_and_year_present_in_permitted_representation"
+      },
+      "exceptions": [
+        "Packages containing bidi or incense sticks",
+        "Domestic LPG cylinders of 14.2 kg or 5 kg bottled and marketed by a public sector undertaking",
+        "Packages containing seeds labelled/certified under the Seeds Act and rules",
+        "Packages containing cosmetic products subject to the Drugs and Cosmetics Rules"
+      ],
+      "severity": "HIGH",
+      "source": {
+        "document": "The Legal Metrology (Packaged Commodities) Rules, 2011",
+        "source_pdf_page": 44,
+        "rule_reference": "Rule 6(1)(d)",
+        "evidence_text": "the month and year in which the commodity is manufactured or pre-packed or imported shall be mentioned in the package"
+      },
+      "status": "DRAFT",
+      "verified": false
+    },
+    {
+      "rule_id": "PC2011-R06-E-001",
+      "rule_reference": "Rule 6(1)(e)",
+      "title": "Retail sale price",
+      "category": "mrp",
+      "applicability": "Every package under Rule 6(1)(e), subject to stated exceptions.",
+      "requirement": "Declare the retail sale price of the package.",
+      "validation": {
+        "type": "FIELD_PRESENCE",
+        "fields": [
+          "retail_sale_price"
+        ],
+        "logic": "mrp_present"
+      },
+      "exceptions": [
+        "Packages containing bidi",
+        "Domestic LPG cylinders covered under the Government's Administrative Price Mechanism",
+        "Alcoholic beverages/spirituous liquor where applicable State Excise laws govern retail sale price declaration; otherwise these Rules apply"
+      ],
+      "severity": "CRITICAL",
+      "source": {
+        "document": "The Legal Metrology (Packaged Commodities) Rules, 2011",
+        "source_pdf_page": 44,
+        "rule_reference": "Rule 6(1)(e)",
+        "evidence_text": "the retail sale price of the package"
+      },
+      "status": "DRAFT",
+      "verified": false
+    },
+    {
+      "rule_id": "PC2011-R06-F-001",
+      "rule_reference": "Rule 6(1)(f)",
+      "title": "Dimensions where relevant",
+      "category": "dimensions",
+      "applicability": "Where the sizes/dimensions of the commodity contained in the package are relevant.",
+      "requirement": "Declare the dimensions of the commodity and, where different pieces have different dimensions, the dimensions of each different piece.",
+      "validation": {
+        "type": "CONDITIONAL_FIELD_PRESENCE",
+        "fields": [
+          "dimensions"
+        ],
+        "logic": "if_dimensions_are_relevant_then_dimensions_must_be_declared"
+      },
+      "severity": "MEDIUM",
+      "source": {
+        "document": "The Legal Metrology (Packaged Commodities) Rules, 2011",
+        "source_pdf_page": 44,
+        "rule_reference": "Rule 6(1)(f)",
+        "evidence_text": "Where the sizes of the commodity contained in the package are relevant, the dimensions ... shall be mentioned."
+      },
+      "status": "DRAFT",
+      "verified": false
+    },
+    {
+      "rule_id": "PC2011-R06-2-001",
+      "rule_reference": "Rule 6(2)",
+      "title": "Consumer complaint contact details",
+      "category": "consumer_contact",
+      "applicability": "Every package under Rule 6(2).",
+      "requirement": "Declare the name, address, telephone number and, if available, e-mail address of the person or office to be contacted for consumer complaints.",
+      "validation": {
+        "type": "FIELD_PRESENCE",
+        "fields": [
+          "consumer_contact_name",
+          "consumer_contact_address",
+          "consumer_contact_phone"
+        ],
+        "optional_fields": [
+          "consumer_contact_email"
+        ]
+      },
+      "severity": "HIGH",
+      "source": {
+        "document": "The Legal Metrology (Packaged Commodities) Rules, 2011",
+        "source_pdf_page": 46,
+        "rule_reference": "Rule 6(2)",
+        "evidence_text": "Every package shall bear the name, address, telephone number, E-mail address, if available, of the person who can be ... contacted, in case of consumer complaints."
+      },
+      "status": "DRAFT",
+      "verified": false
+    },
+    {
+      "rule_id": "PC2011-R06-3-001",
+      "rule_reference": "Rule 6(3)",
+      "title": "Restrictions on stickers altering required declarations",
+      "category": "sticker_compliance",
+      "applicability": "Declarations required under these Rules.",
+      "requirement": "Individual stickers must not be used to alter or make required declarations, except that a lower revised MRP inclusive of all taxes may be affixed and must not cover the original MRP declaration.",
+      "validation": {
+        "type": "VISUAL_RULE",
+        "logic": "no_overlay_sticker_may_obscure_original_required_declaration_except_permitted_lower_mrp_sticker"
+      },
+      "severity": "HIGH",
+      "source": {
+        "document": "The Legal Metrology (Packaged Commodities) Rules, 2011",
+        "source_pdf_page": 46,
+        "rule_reference": "Rule 6(3)",
+        "evidence_text": "It shall not be permissible to affix individual stickers on the package for altering or making declaration required under these rules."
+      },
+      "status": "DRAFT",
+      "verified": false
+    },
+    {
+      "rule_id": "PC2011-R06-5-001",
+      "rule_reference": "Rule 6(5)",
+      "title": "Declarations for multi-component packages",
+      "category": "multi_component_package",
+      "applicability": "Packages consisting of multiple components packed in two or more units and sold as a single commodity.",
+      "requirement": "Required declarations must appear on the main package together with information about accompanying packages, or be provided on individual packages with the main package giving appropriate intimation; if components are sold as spare parts, declarations must be on each package.",
+      "validation": {
+        "type": "CONDITIONAL_DECLARATION_CHECK",
+        "logic": "multi_component_declaration_structure_must_match_rule_6_5"
+      },
+      "severity": "HIGH",
+      "source": {
+        "document": "The Legal Metrology (Packaged Commodities) Rules, 2011",
+        "source_pdf_page": 46,
+        "rule_reference": "Rule 6(5)",
+        "evidence_text": "Where a commodity consists of a number of components and these components are packed in two or more units, for sale as a single commodity, the declaration required ... shall appear on the main package."
+      },
+      "status": "DRAFT",
+      "verified": false
+    },
+    {
+      "rule_id": "PC2011-R07-001",
+      "rule_reference": "Rule 7",
+      "title": "Minimum numeral and letter height",
+      "category": "display_legibility",
+      "applicability": "Declarations on the principal display panel, subject to Rule 7(4).",
+      "requirement": "Numeral height must meet Table I for weight/volume or Table II for length/area/number; declaration letters must be at least 1 mm high, or 2 mm when blown, formed, molded, embossed or perforated.",
+      "validation": {
+        "type": "MEASUREMENT_TABLE_LOOKUP",
+        "tables": [
+          "Rule 7 Table I",
+          "Rule 7 Table II"
+        ],
+        "logic": "declaration_text_height_meets_threshold_for_declared_quantity_type_and_size"
+      },
+      "severity": "MEDIUM",
+      "source": {
+        "document": "The Legal Metrology (Packaged Commodities) Rules, 2011",
+        "source_pdf_page": 47,
+        "rule_reference": "Rule 7(2)-(3)",
+        "evidence_text": "The height of letters in the declaration shall not be less than 1 mm height and when blown, formed, molded, embossed or perforated, the height of letters shall not be less than 2 mm."
+      },
+      "status": "DRAFT",
+      "verified": false
+    },
+    {
+      "rule_id": "PC2011-R08-001",
+      "rule_reference": "Rule 8",
+      "title": "Declarations on principal display panel",
+      "category": "declaration_location",
+      "applicability": "Every declaration required under these Rules.",
+      "requirement": "Required declarations must appear on the principal display panel; the area surrounding the quantity declaration must be free from printed information with specified spacing.",
+      "validation": {
+        "type": "LOCATION_AND_SPACING",
+        "logic": "required_declarations_on_principal_display_panel_and_quantity_clear_space_meets_rule"
+      },
+      "severity": "HIGH",
+      "source": {
+        "document": "The Legal Metrology (Packaged Commodities) Rules, 2011",
+        "source_pdf_page": 48,
+        "rule_reference": "Rule 8(1)",
+        "evidence_text": "Every declaration required to be made under these rules shall appear on the principal display panel."
+      },
+      "status": "DRAFT",
+      "verified": false
+    },
+    {
+      "rule_id": "PC2011-R09-001",
+      "rule_reference": "Rule 9",
+      "title": "Legibility and contrast of declarations",
+      "category": "declaration_legibility",
+      "applicability": "Declarations required on a package under these Rules.",
+      "requirement": "Declarations must be legible and prominent; MRP and net quantity numerals must contrast conspicuously with the label background, subject to stated exceptions.",
+      "validation": {
+        "type": "VISUAL_QUALITY_CHECK",
+        "logic": "declaration_legible_and_mrp_net_quantity_contrast_is_conspicuous"
+      },
+      "severity": "HIGH",
+      "source": {
+        "document": "The Legal Metrology (Packaged Commodities) Rules, 2011",
+        "source_pdf_page": 49,
+        "rule_reference": "Rule 9(1)",
+        "evidence_text": "Every declaration which is required to be made on a package under these rules shall be legible and prominent."
+      },
+      "status": "DRAFT",
+      "verified": false
+    },
+    {
+      "rule_id": "PC2011-R09-2-001",
+      "rule_reference": "Rule 9(2)",
+      "title": "Declarations must not require reading through liquid",
+      "category": "declaration_readability",
+      "applicability": "Packages containing liquid commodities.",
+      "requirement": "No declaration should be made in a way that requires it to be read through the liquid commodity.",
+      "validation": {
+        "type": "VISUAL_RULE",
+        "logic": "required_text_must_not_be_obscured_by_liquid_content"
+      },
+      "severity": "MEDIUM",
+      "source": {
+        "document": "The Legal Metrology (Packaged Commodities) Rules, 2011",
+        "source_pdf_page": 49,
+        "rule_reference": "Rule 9(2)",
+        "evidence_text": "No declaration shall be made so as to require it to be read through any liquid commodity contained in the package."
+      },
+      "status": "DRAFT",
+      "verified": false
+    },
+    {
+      "rule_id": "PC2011-R09-3-001",
+      "rule_reference": "Rule 9(3)",
+      "title": "Outside container or wrapper declarations",
+      "category": "outer_wrapper",
+      "applicability": "Where a package has an outside container or wrapper.",
+      "requirement": "The outside container or wrapper must also contain required declarations unless it is transparent and the declarations on the inner package are easily readable through it.",
+      "validation": {
+        "type": "CONDITIONAL_WRAPPER_CHECK",
+        "logic": "outer_wrapper_must_reproduce_required_declarations_unless_transparent_and_readable"
+      },
+      "severity": "HIGH",
+      "source": {
+        "document": "The Legal Metrology (Packaged Commodities) Rules, 2011",
+        "source_pdf_page": 49,
+        "rule_reference": "Rule 9(3)",
+        "evidence_text": "Where a package is provided with an outside container or wrapper such container or wrapper shall also contain all the declarations that are required to appear on the package."
+      },
+      "status": "DRAFT",
+      "verified": false
+    },
+    {
+      "rule_id": "PC2011-R09-4-001",
+      "rule_reference": "Rule 9(4)",
+      "title": "Language of package declarations",
+      "category": "language",
+      "applicability": "Declarations required under these Rules.",
+      "requirement": "Required particulars shall be in Hindi in Devanagari script or in English; additional languages are permitted.",
+      "validation": {
+        "type": "LANGUAGE_CHECK",
+        "logic": "required_declaration_text_present_in_hindi_or_english"
+      },
+      "severity": "MEDIUM",
+      "source": {
+        "document": "The Legal Metrology (Packaged Commodities) Rules, 2011",
+        "source_pdf_page": 50,
+        "rule_reference": "Rule 9(4)",
+        "evidence_text": "The particulars of the declarations required to be specified under this rule on a package shall either be in Hindi in Devnagri script or in English."
+      },
+      "status": "DRAFT",
+      "verified": false
+    },
+    {
+      "rule_id": "PC2011-R10-001",
+      "rule_reference": "Rule 10",
+      "title": "Complete manufacturer/packer/importer address",
+      "category": "manufacturer_details",
+      "applicability": "Every package kept, offered or exposed for sale or sold, subject to stated small-package provision.",
+      "requirement": "The package must conspicuously bear the name and complete address of the manufacturer, or manufacturer and packer where applicable, and importer for imported packages; a limited identification mark is permitted for packages of capacity 5 cubic cm or less.",
+      "validation": {
+        "type": "FIELD_PRESENCE_AND_ADDRESS_COMPLETENESS",
+        "logic": "required_party_identity_and_address_detected_and_address_is_sufficient_to_identify_and_locate_party"
+      },
+      "severity": "CRITICAL",
+      "source": {
+        "document": "The Legal Metrology (Packaged Commodities) Rules, 2011",
+        "source_pdf_page": 50,
+        "rule_reference": "Rule 10(1)",
+        "evidence_text": "every package kept, offered or exposed for sale or sold shall bear conspicuously on it, the name and complete address of the Manufacturer ... and in case of imported packages, the name and address of the importer"
+      },
+      "status": "DRAFT",
+      "verified": false
+    },
+    {
+      "rule_id": "PC2011-R11-001",
+      "rule_reference": "Rule 11",
+      "title": "Net quantity excludes wrappers and packaging materials",
+      "category": "quantity_definition",
+      "applicability": "Declaration of net quantity.",
+      "requirement": "The weight of wrappers and materials other than the commodity must be excluded from the declared net quantity.",
+      "validation": {
+        "type": "MEASUREMENT_RULE",
+        "logic": "net_quantity_excludes_packaging_tare"
+      },
+      "severity": "CRITICAL",
+      "source": {
+        "document": "The Legal Metrology (Packaged Commodities) Rules, 2011",
+        "source_pdf_page": 51,
+        "rule_reference": "Rule 11(1)",
+        "evidence_text": "In declaring the net quantity of the commodity contained in a package, the weight of wrappers and materials other than the commodity shall be excluded."
+      },
+      "status": "DRAFT",
+      "verified": false
+    },
+    {
+      "rule_id": "PC2011-R12-001",
+      "rule_reference": "Rule 12",
+      "title": "Quantity expressed using appropriate type of unit",
+      "category": "quantity_unit",
+      "applicability": "Declarations of quantity under Rule 12, subject to Fourth Schedule exceptions.",
+      "requirement": "Quantity must be expressed using the unit of mass, length, area, volume or number appropriate to the way the commodity is sold, unless a Fourth Schedule exception applies.",
+      "validation": {
+        "type": "UNIT_TYPE_CHECK",
+        "logic": "declared_quantity_unit_matches_commodity_measurement_mode_or_fourth_schedule_exception_applies"
+      },
+      "severity": "HIGH",
+      "source": {
+        "document": "The Legal Metrology (Packaged Commodities) Rules, 2011",
+        "source_pdf_page": 52,
+        "rule_reference": "Rule 12(2)",
+        "evidence_text": "Except in the cases of commodities specified in the Fourth Schedule, the declaration of quantity shall be in terms of the unit of mass ... length ... area ... volume ... or number"
+      },
+      "status": "DRAFT",
+      "verified": false
+    },
+    {
+      "rule_id": "PC2011-R12-6-001",
+      "rule_reference": "Rule 12(6)",
+      "title": "No misleading quantity wording",
+      "category": "quantity_language",
+      "applicability": "Quantity declaration.",
+      "requirement": "The quantity declaration must not contain wording that creates an exaggerated, misleading or inadequate impression of quantity, including examples such as 'minimum', 'not less than', 'average', 'about' or 'approximately'.",
+      "validation": {
+        "type": "TEXT_PATTERN_CHECK",
+        "disallowed_phrases": [
+          "minimum",
+          "not less than",
+          "average",
+          "about",
+          "approximately"
+        ],
+        "logic": "quantity_declaration_must_not_contain_disallowed_or_equivalent_misleading_qualifiers"
+      },
+      "severity": "HIGH",
+      "source": {
+        "document": "The Legal Metrology (Packaged Commodities) Rules, 2011",
+        "source_pdf_page": 53,
+        "rule_reference": "Rule 12(6)",
+        "evidence_text": "The declaration of quantity shall not contain any word or expression which tends to create an exaggerated, misleading or inadequate impression as to the quantity."
+      },
+      "status": "DRAFT",
+      "verified": false
+    },
+    {
+      "rule_id": "PC2011-R13-001",
+      "rule_reference": "Rule 13",
+      "title": "Permitted units below and above threshold quantities",
+      "category": "unit_format",
+      "applicability": "Statements of weight, measure or number under Rule 13.",
+      "requirement": "The unit used depends on the magnitude of the declared quantity; the source specifies gram/centimetre/square decimetre/cubic centimetre/millilitre below specified thresholds and larger corresponding units at or above thresholds, with the stated proviso.",
+      "validation": {
+        "type": "THRESHOLD_UNIT_RULE",
+        "logic": "unit_selected_according_to_rule_13_thresholds"
+      },
+      "severity": "MEDIUM",
+      "source": {
+        "document": "The Legal Metrology (Packaged Commodities) Rules, 2011",
+        "source_pdf_page": 53,
+        "rule_reference": "Rule 13",
+        "evidence_text": "The units of weight or measure or number shall be specified in accordance with the units specified in sub-rule (2) or sub-rule (3), as the case may be."
+      },
+      "status": "DRAFT",
+      "verified": false
+    },
+    {
+      "rule_id": "PC2011-R14-001",
+      "rule_reference": "Rule 14",
+      "title": "Dimensions for certain commodities",
+      "category": "dimensions",
+      "applicability": "Commodities covered by Rule 14 such as specified fabric/cloth and similar items.",
+      "requirement": "Where applicable, dimensions must be declared on the package or label; for multiple pieces of different dimensions, each applicable dimension and retail sale price must be declared as required by the rule.",
+      "validation": {
+        "type": "CONDITIONAL_FIELD_PRESENCE",
+        "logic": "if_rule_14_applies_then_dimensions_must_be_declared"
+      },
+      "severity": "MEDIUM",
+      "source": {
+        "document": "The Legal Metrology (Packaged Commodities) Rules, 2011",
+        "source_pdf_page": 55,
+        "rule_reference": "Rule 14",
+        "evidence_text": "the dimensions of finished size of such commodities shall also be declared on the package or on the label affixed thereto"
+      },
+      "status": "DRAFT",
+      "verified": false
+    },
+    {
+      "rule_id": "PC2011-R15-001",
+      "rule_reference": "Rule 15",
+      "title": "Dimensions and weight declarations in certain cases",
+      "category": "quantity_dimensions",
+      "applicability": "Commodities covered by Rule 15 where dimensions/weight, or their combination, has a relationship to price.",
+      "requirement": "The quantity declaration must include the applicable dimensions, weight or combination as required by the rule.",
+      "validation": {
+        "type": "CONDITIONAL_DECLARATION_CHECK",
+        "logic": "if_rule_15_applies_then_required_dimension_weight_combination_present"
+      },
+      "severity": "MEDIUM",
+      "source": {
+        "document": "The Legal Metrology (Packaged Commodities) Rules, 2011",
+        "source_pdf_page": 55,
+        "rule_reference": "Rule 15",
+        "evidence_text": "Where the dimensions and weight, or combination thereof, of a commodity has or has a relationship to the price of that commodity, the declaration of quantity ... shall also include a declaration as to such dimensions, weight or combination."
+      },
+      "status": "DRAFT",
+      "verified": false
+    },
+    {
+      "rule_id": "PC2011-R16-001",
+      "rule_reference": "Rule 16",
+      "title": "Number of usable sheets",
+      "category": "count_declaration",
+      "applicability": "Packages containing sheets such as aluminium foil, facial tissues, waxed paper, toilet paper or similar sheet commodities.",
+      "requirement": "Declare the number of usable sheets and the dimensions of each sheet.",
+      "validation": {
+        "type": "CONDITIONAL_FIELD_PRESENCE",
+        "fields": [
+          "usable_sheet_count",
+          "sheet_dimensions"
+        ],
+        "logic": "if_rule_16_applies_then_sheet_count_and_dimensions_present"
+      },
+      "severity": "MEDIUM",
+      "source": {
+        "document": "The Legal Metrology (Packaged Commodities) Rules, 2011",
+        "source_pdf_page": 56,
+        "rule_reference": "Rule 16",
+        "evidence_text": "the declaration of quantity on the package shall also include a statement as to the number of usable sheets contained in the package and the dimensions of each such sheet."
+      },
+      "status": "DRAFT",
+      "verified": false
+    },
+    {
+      "rule_id": "PC2011-R17-001",
+      "rule_reference": "Rule 17",
+      "title": "Container type commodity quantity expression",
+      "category": "container_declaration",
+      "applicability": "Commodities expressed as bags, boxes, cups, pans or like containers used for filling other materials or objects.",
+      "requirement": "Quantity must be expressed according to the applicable container shape/type provisions, including count and relevant dimensions where required.",
+      "validation": {
+        "type": "CONDITIONAL_CONTAINER_RULE",
+        "logic": "if_rule_17_applies_then_container_count_and_relevant_dimensions_present"
+      },
+      "severity": "MEDIUM",
+      "source": {
+        "document": "The Legal Metrology (Packaged Commodities) Rules, 2011",
+        "source_pdf_page": 56,
+        "rule_reference": "Rule 17",
+        "evidence_text": "The commodities shall be expressed as bags, boxes, cups, pans or the like designed and sold in retail trade for being used as containers for other materials or objects and shall be labeled with the declaration of quantity as follows."
+      },
+      "status": "DRAFT",
+      "verified": false
+    },
+    {
+      "rule_id": "PC2011-R18-001",
+      "rule_reference": "Rule 18",
+      "title": "Wholesale and retail dealer sale conditions",
+      "category": "dealer_sale",
+      "applicability": "Wholesale and retail dealers handling packages.",
+      "requirement": "A wholesale or retail dealer/importer must not sell, distribute, deliver, display or store packaged commodity unless the package complies with the Act and Rules.",
+      "validation": {
+        "type": "PACKAGE_COMPLIANCE_GATE",
+        "logic": "package_must_be_compliant_before_sale_or_display"
+      },
+      "severity": "HIGH",
+      "source": {
+        "document": "The Legal Metrology (Packaged Commodities) Rules, 2011",
+        "source_pdf_page": 57,
+        "rule_reference": "Rule 18(1)",
+        "evidence_text": "No wholesale dealer or retail dealer or importer shall sell, distribute, deliver, display or store for sale any commodity in the packaged form unless the package complies in all respects, with the provisions of the Act and these rules."
+      },
+      "status": "DRAFT",
+      "verified": false
+    },
+    {
+      "rule_id": "PC2011-R24-001",
+      "rule_reference": "Rule 24",
+      "title": "Wholesale package declarations",
+      "category": "wholesale_package",
+      "applicability": "Wholesale packages.",
+      "requirement": "A wholesale package must carry legible, definite, plain and conspicuous declarations covering manufacturer/importer/packer identity, commodity identity, and total retail package count or net quantity in standard units.",
+      "validation": {
+        "type": "FIELD_PRESENCE",
+        "fields": [
+          "manufacturer_or_importer_or_packer",
+          "commodity_identity",
+          "retail_package_count_or_wholesale_net_quantity"
+        ],
+        "logic": "wholesale_required_declarations_present"
+      },
+      "severity": "HIGH",
+      "source": {
+        "document": "The Legal Metrology (Packaged Commodities) Rules, 2011",
+        "source_pdf_page": 67,
+        "rule_reference": "Rule 24",
+        "evidence_text": "Every wholesale package shall bear thereon a legible, definite, plain and conspicuous declaration as to the name and address of the manufacturer or importer ... the identity of the commodity ... and the total number of retail package ... or the net quantity"
+      },
+      "status": "DRAFT",
+      "verified": false
+    },
+    {
+      "rule_id": "PC2011-R25-001",
+      "rule_reference": "Rule 25",
+      "title": "Export packages sold in India",
+      "category": "export_package",
+      "applicability": "Export packages that are sold in India.",
+      "requirement": "An export package must be re-packed or relabelled according to Chapter II before being sold in India.",
+      "validation": {
+        "type": "CONDITIONAL_COMPLIANCE_GATE",
+        "logic": "if_export_package_sold_in_india_then_chapter_ii_repacking_or_relabeling_required"
+      },
+      "severity": "HIGH",
+      "source": {
+        "document": "The Legal Metrology (Packaged Commodities) Rules, 2011",
+        "source_pdf_page": 67,
+        "rule_reference": "Rule 25",
+        "evidence_text": "An export package shall not be sold in India unless the manufacturer or packer has re-packed or relabeled the commodity in accordance with the provisions contained in Chapter II"
+      },
+      "status": "DRAFT",
+      "verified": false
+    },
+    {
+      "rule_id": "PC2011-R26-001",
+      "rule_reference": "Rule 26",
+      "title": "Exemptions for certain packages",
+      "category": "exemptions",
+      "applicability": "Packages meeting the conditions in Rule 26.",
+      "requirement": "The Rules do not apply to certain small-quantity packages and specified fast-food, drug-formulation and agricultural-farm-produce packages, subject to the exact conditions and provisos in Rule 26.",
+      "validation": {
+        "type": "EXEMPTION_LOOKUP",
+        "logic": "check_rule_26_exemption_before_flagging_missing_mrp_or_net_quantity"
+      },
+      "exceptions": [
+        "Commodity net weight/measure of 10 g or 10 ml or less, with the proviso that MRP and net quantity declarations are required on packages containing 10 g to 20 g or 10 ml to 20 ml",
+        "Fast food items packed by restaurant/hotel and the like",
+        "Scheduled and non-scheduled formulations covered under the Drugs (Price Control) Order, 1995",
+        "Agricultural farm produce in packages above 50 kg"
+      ],
+      "severity": "CRITICAL",
+      "source": {
+        "document": "The Legal Metrology (Packaged Commodities) Rules, 2011",
+        "source_pdf_page": 68,
+        "rule_reference": "Rule 26",
+        "evidence_text": "Nothing contained in these rules shall apply to any package containing a commodity if the net weight or measure of the commodity is ten gram or ten millilitre or less ... Provided that the declaration in respect of maximum retail price and net quantity shall be declared on packages containing 10g to 20g or 10ml to 20ml"
+      },
+      "status": "DRAFT",
+      "verified": false
+    },
+    {
+      "rule_id": "PC2011-R31-001",
+      "rule_reference": "Rule 31",
+      "title": "Advertisement mentioning retail sale price",
+      "category": "advertisement",
+      "applicability": "Advertisements mentioning the retail sale price of a pre-packaged commodity.",
+      "requirement": "Such an advertisement must also declare the net quantity or number of the commodity; the font size of the net quantity in the advertisement must be the same as that of the retail sale price.",
+      "validation": {
+        "type": "ADVERTISEMENT_CHECK",
+        "logic": "if_ad_mentions_retail_sale_price_then_net_quantity_or_number_present_and_font_size_matches"
+      },
+      "severity": "MEDIUM",
+      "source": {
+        "document": "The Legal Metrology (Packaged Commodities) Rules, 2011",
+        "source_pdf_page": 70,
+        "rule_reference": "Rule 31",
+        "evidence_text": "Any advertisement mentioning the retail sale price of the pre-packaged commodity shall contain a declaration as to the net quantity or number of the commodity contained in the package."
+      },
+      "status": "DRAFT",
+      "verified": false
+    }
+  ]
+}

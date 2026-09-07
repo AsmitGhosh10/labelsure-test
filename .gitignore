@@ -1,0 +1,79 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+*.whl
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Virtual environments
+venv/
+env/
+.env
+.venv/
+.venv312/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.settings/
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.nox/
+.tox/
+.cache/
+
+# Logs
+*.log
+logs/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# Keep test results and images
+!ocr_test_results/
+!test_images/
+!reports/
+
+# Ignore specific files in ocr_test_results
+ocr_test_results/*.json
+
+# Generated inspection artifacts (reproducible from the pipeline)
+reports/inspections/*.md
+reports/inspections/*.pdf
+reports/inspections/evidence/
+
+# Local development and demo databases
+inspections.db
+demo_inspections.db
+*.db-journal

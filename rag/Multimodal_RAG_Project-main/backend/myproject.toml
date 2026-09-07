@@ -1,0 +1,36 @@
+[project]
+name = "multimodal-hybrid-rag"
+version = "0.1.0"
+description = "Production-grade Multimodal Semantic Search + Hybrid RAG System"
+authors = [{ name = "Survivor1007" }]
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.0",
+    "pydantic>=2.8.0",
+    "pydantic-settings>=2.0.0",
+    "sqlalchemy[asyncio]>=2.0.30",
+    "asyncpg>=0.29.0",
+    "alembic>=1.13.0",
+    "python-dotenv>=1.0.0",
+    "structlog>=24.0.0",
+    "python-multipart>=0.0.9",
+    "sentence-transformers>=3.0.0",
+    "transformers>=4.40.0",          # for official CLIP support
+    "pillow>=10.0.0",                # image handling
+    "numpy>=1.26.0",
+    "rank-bm25>=0.2.2",
+    "faiss-cpu>=1.8.0",              # CPU version for compatibility
+]
+
+[tool.uv]
+dev-dependencies = [
+    "black>=24.0.0",
+    "isort>=5.13.0",
+    "mypy>=1.10.0",
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+]
+
+[project.scripts]
+start = "uvicorn main:app --reload --host 0.0.0.0 --port 8000"

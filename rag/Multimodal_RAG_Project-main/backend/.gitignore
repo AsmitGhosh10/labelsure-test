@@ -1,0 +1,119 @@
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# =========================
+# Virtual Environment
+# =========================
+.venv/
+venv/
+env/
+ENV/
+
+# =========================
+# Environment Variables
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# Logs
+# =========================
+logs/
+*.log
+
+# =========================
+# Database
+# =========================
+*.db
+*.sqlite3
+
+# =========================
+# Alembic
+# =========================
+alembic/versions/*.pyc
+
+# =========================
+# IDE / Editor
+# =========================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# =========================
+# OS Files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# ML Models & Indexes
+# =========================
+data/indexes/
+*.faiss
+*.bm25
+*.pkl
+*.joblib
+*.npy
+
+# =========================
+# HuggingFace / Transformers Cache
+# =========================
+.cache/
+.huggingface/
+transformers_cache/
+
+# =========================
+# PyTorch / Tensorflow
+# =========================
+*.pt
+*.pth
+*.ckpt
+
+# =========================
+# Temporary Files
+# =========================
+tmp/
+temp/
+*.tmp
+
+# =========================
+# Test / Coverage
+# =========================
+.coverage
+htmlcov/
+.pytest_cache/
+
+# =========================
+# Jupyter Notebooks
+# =========================
+.ipynb_checkpoints/
+
+# =========================
+# Docker (for later use)
+# =========================
+docker-compose.override.yml
+
+# =========================
+# Misc
+# =========================
+*.bak
+*.backup
+
+data/*
+!data/.gitkeep
+
+tests/*

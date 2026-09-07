@@ -1,0 +1,91 @@
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "14px"}}}%%
+flowchart TB
+  classDef done fill:#1a7f37,color:#fff
+  classDef current fill:#b26a00,color:#fff
+  classDef todo fill:#333,color:#fff
+
+  subgraph Ingestion ["Image Ingestion"]
+    direction LR
+    QG["ImageQualityGate\nusable/garbage/reject + score 0–100"]:::done
+    OCR["OCR Service\nPaddleOCR concurrent (800×1000)\nrescue: sharpen→fallback"]:::done
+  end
+
+  subgraph Extraction ["Text → Field Extraction"]
+    direction LR
+    FE["FieldExtractor\n12 fields: MRP, product name,\nnet qty, dates, manufacturer,\npaker/importer, care, etc."]:::done
+    HH["Heuristics:\nunits, Indian names,\n4-2-4 phones, patterns"]:::done
+  end
+
+  subgraph Evidence ["Evidence Pipeline"]
+    direction LR
+    EV["EvidencePipeline\nassociations, pointers,\nvertical chains, envelopes,\naddress enrichment"]:::done
+    CT["Cross-image\npointer merge\n(SEE BASE...→base of can)"]:::done
+  end
+
+  subgraph Rules ["Rule Engines"]
+    direction LR
+    LE["LabelGuardEngine\n31 LM(PC)R 2011 rules\nverified flag + R26 gate"]:::done
+    RE["Legacy RuleEngine\n9 draft rules (still loadable)"]:::done
+  end
+
+  subgraph Confidence ["Confidence Fusion"]
+    direction LR
+    CE["ConfidenceEngine\nweighted fusion + bidirectional\ndowngrade threshold"]:::done
+  end
+
+  subgraph Review ["Targeted Review Actions"]
+    direction LR
+    RA["ReviewActionBuilder\nMANUAL_REVIEW→exact surface/location\nskip PASS fields + meta-rules"]:::current
+  end
+
+  subgraph API ["FastAPI Endpoints"]
+    direction LR
+    POST["POST /inspect\nmulti-image inspect (saves to DB)"]:::done
+    GET_L["GET /inspections\nrecent history summaries"]:::current
+    GET_G["GET /inspections/{id}\nfull stored response"]:::current
+  end
+
+  subgraph Storage ["Persistence"]
+    direction LR
+    DB["SQLAlchemy database\nSQLite (dev) / Postgres (prod)\nsave_inspection, list, get"]:::current
+  end
+
+  subgraph Frontend ["Gradio UI"]
+    direction LR
+    CAP["Live camera capture\n+ file upload\n(max 5 images)"]:::done
+    TAB1["Review Actions tab\n⚠️ field · check location · source · reason"]:::current
+    TAB2["Findings tab\nrule results table"]:::done
+    TAB3["Extracted Fields tab\n12-field confidence grid"]:::done
+    TAB4["Report tab\nmarkdown report + download"]:::done
+    TAB5["Raw JSON tab"]:::done
+  end
+
+  subgraph Reports ["Report Generator"]
+    direction LR
+    RG["ReportGenerator\n9-section markdown\nTargeted Review Actions\nrule→surface blocks"]:::current
+  end
+
+  subgraph Tests ["Test Suite"]
+    direction LR
+    T1["32 field extraction"]:::done
+    T2["22 legacy rule engine"]:::done
+    T3["23 labelguard engine"]:::done
+    T4["16 confidence engine"]:::done
+    T5["14 multi-image OCR-evidence"]:::done
+    T6["23 can regression + 17 bottle"]:::done
+    T7["6 schema freeze\n(labelguard-inspection/1.0)"]:::current
+  end
+
+  QG --> OCR --> FE
+  FE --> EV
+  EV --> LE
+  LE --> CE
+  CE --> RA
+  RA --> POST
+  DB --> GET_L
+  DB --> GET_G
+  POST --> DB
+  CAP --> FE
+  RG --> TAB4
+
+  style todo fill:#555,color:#ddd
