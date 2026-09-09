@@ -11,7 +11,7 @@ error, never be silently swallowed (PRD §21/§30).
 
 import json
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from typing import Dict, Any, List, Optional
 
 from sqlalchemy import (
@@ -483,36 +483,47 @@ def inspection_stats(limit_common: int = 8) -> Dict[str, Any]:
                 .all()
             )
 
-            # Violation frequency and per-manufacturer / per-day trends
-            rows = session.query(
-                InspectionRow.violation_rule_ids,
+            # Violation frequency and SQL-side per-manufacturer / per-day trends
+            mfg_rows = session.query(
                 InspectionRow.manufacturer,
-                InspectionRow.timestamp,
                 InspectionRow.decision,
-            ).all()
+                func.count(),
+            ).group_by(InspectionRow.manufacturer, InspectionRow.decision).all()
 
-            violations: Dict[str, int] = {}
             manufacturers: Dict[str, Dict[str, int]] = {}
+            for m_name, dec, cnt in mfg_rows:
+                key = (m_name or "Unknown").strip()
+                bucket = manufacturers.setdefault(key, {"total": 0, "non_compliant": 0})
+                bucket["total"] += cnt
+                if dec == "NON_COMPLIANT":
+                    bucket["non_compliant"] += cnt
+
+            day_expr = func.substr(InspectionRow.timestamp, 1, 10)
+            day_rows = session.query(
+                day_expr,
+                InspectionRow.decision,
+                func.count(),
+            ).group_by(day_expr, InspectionRow.decision).all()
+
             per_day: Dict[str, Dict[str, int]] = {}
-            for vids, manufacturer, timestamp, decision in rows:
+            for day, dec, cnt in day_rows:
+                d_key = day or "unknown"
+                day_bucket = per_day.setdefault(
+                    d_key,
+                    {"total": 0, "COMPLIANT": 0, "NON_COMPLIANT": 0, "MANUAL_REVIEW": 0},
+                )
+                day_bucket["total"] += cnt
+                if dec in day_bucket:
+                    day_bucket[dec] += cnt
+
+            v_rows = session.query(InspectionRow.violation_rule_ids).filter(
+                InspectionRow.violation_rule_ids.isnot(None)
+            ).all()
+            violations: Dict[str, int] = {}
+            for (vids,) in v_rows:
                 for rule_id in (vids or "").split(","):
                     if rule_id:
                         violations[rule_id] = violations.get(rule_id, 0) + 1
-                key = (manufacturer or "Unknown").strip()
-                bucket = manufacturers.setdefault(
-                    key, {"total": 0, "non_compliant": 0}
-                )
-                bucket["total"] += 1
-                if decision == "NON_COMPLIANT":
-                    bucket["non_compliant"] += 1
-                day = (timestamp or "")[:10] or "unknown"
-                day_bucket = per_day.setdefault(
-                    day,
-                    {"total": 0, "COMPLIANT": 0, "NON_COMPLIANT": 0, "MANUAL_REVIEW": 0},
-                )
-                day_bucket["total"] += 1
-                if decision in day_bucket:
-                    day_bucket[decision] += 1
 
             # Inspector activity from recorded decisions
             activity = dict(
@@ -814,3 +825,55 @@ def count_users() -> int:
             return session.query(func.count(UserRow.username)).scalar() or 0
     except Exception:
         return 0
+
+
+
+# ---------------------------------------------------------------------------
+# Data Retention Policy (§30)
+# ---------------------------------------------------------------------------
+
+DEFAULT_RETENTION_DAYS = int(os.environ.get("RETENTION_DAYS", "365"))
+
+
+def purge_expired_records(retention_days: Optional[int] = None) -> Dict[str, int]:
+    """Purge inspection records, inspector decisions, and audit logs older than retention_days.
+
+    Returns the count of purged records by table.
+    """
+    if retention_days is None:
+        retention_days = DEFAULT_RETENTION_DAYS
+
+    init_db()
+    cutoff_dt = datetime.now(timezone.utc) - timedelta(days=retention_days)
+    cutoff_str = cutoff_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    purged = {"inspections": 0, "decisions": 0, "audit_log": 0}
+
+    try:
+        with SessionLocal() as session:
+            insp_deleted = (
+                session.query(InspectionRow)
+                .filter(InspectionRow.timestamp < cutoff_str)
+                .delete(synchronize_session=False)
+            )
+            purged["inspections"] = insp_deleted or 0
+
+            dec_deleted = (
+                session.query(InspectorDecisionRow)
+                .filter(InspectorDecisionRow.timestamp < cutoff_str)
+                .delete(synchronize_session=False)
+            )
+            purged["decisions"] = dec_deleted or 0
+
+            audit_deleted = (
+                session.query(AuditLogRow)
+                .filter(AuditLogRow.timestamp < cutoff_str)
+                .delete(synchronize_session=False)
+            )
+            purged["audit_log"] = audit_deleted or 0
+
+            session.commit()
+    except Exception:
+        pass
+
+    return purged

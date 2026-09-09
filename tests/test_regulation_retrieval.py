@@ -25,7 +25,7 @@ def retriever():
 
 class TestCorpus:
     def test_corpus_loads_every_rule(self, retriever):
-        assert len(retriever.chunks) == 31
+        assert len(retriever.chunks) >= 31
         assert not retriever.load_errors
 
     def test_every_chunk_carries_a_citable_source(self, retriever):
@@ -38,13 +38,13 @@ class TestCorpus:
             assert citation["quote"], chunk.chunk_id
 
     def test_effective_date_is_preserved(self, retriever):
-        assert all(c.effective_date == "2011-03-07" for c in retriever.chunks)
+        assert all(c.effective_date is not None for c in retriever.chunks)
 
     def test_stats_report_the_corpus_honestly(self, retriever):
         stats = retriever.stats()
-        assert stats["chunks"] == 31
-        assert stats["with_page_numbers"] == 31
-        assert stats["source_types"] == ["ruleset"]
+        assert stats["chunks"] >= 31
+        assert stats["with_page_numbers"] >= 31
+        assert "ruleset" in stats["source_types"]
 
 
 class TestRetrieval:
@@ -195,10 +195,22 @@ class TestCorpusIngestion:
         assert not retriever.load_errors
 
     def test_missing_ruleset_degrades_instead_of_crashing(self, tmp_path):
-        retriever = RegulationRetriever(rules_path=str(tmp_path / "absent.json"))
+        retriever = RegulationRetriever(
+            rules_path=str(tmp_path / "absent.json"), corpus_dir=str(tmp_path / "empty")
+        )
         assert retriever.chunks == []
         assert retriever.load_errors
         assert retriever.search("anything") == []
+
+
+class TestCorpusIngestionAmendments:
+    def test_loads_corpus_directory_amendments(self):
+        retriever = RegulationRetriever()
+        assert len(retriever.chunks) > 31
+        amendment_chunks = [c for c in retriever.chunks if c.source_type != "ruleset"]
+        assert len(amendment_chunks) >= 6
+        assert any("E-Commerce" in c.title for c in amendment_chunks)
+        assert any("Unit Sale Price" in c.title for c in amendment_chunks)
 
 
 class TestVectorizerSeam:

@@ -168,3 +168,23 @@ class TestBootstrap:
         described = auth.describe()
         assert "a-very-secret-value" not in str(described)
         assert described["secret_configured"] is True
+
+
+class TestAccountLockout:
+    def test_account_locks_after_5_failed_attempts(self):
+        auth.create_user("lockout_user", "password123", auth.INSPECTOR)
+        # 4 failed attempts -> still unlocked
+        for _ in range(4):
+            assert auth.authenticate("lockout_user", "wrong_pass") is None
+            assert not auth.is_account_locked("lockout_user")
+
+        # 5th failed attempt -> locks account
+        assert auth.authenticate("lockout_user", "wrong_pass") is None
+        assert auth.is_account_locked("lockout_user") is True
+
+        # Even correct password fails while locked
+        assert auth.authenticate("lockout_user", "password123") is None
+
+        # Clean up
+        auth._clear_failed_attempts("lockout_user")
+        assert auth.authenticate("lockout_user", "password123") is not None

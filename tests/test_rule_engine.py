@@ -302,8 +302,8 @@ class TestRuleEngine:
     def test_default_ruleset_loads_from_json(self):
         engine = RuleEngine()
         assert len(engine.rules) >= 9
-        assert engine.ruleset_verified is False
-        assert engine.enforce_verification is False
+        assert engine.ruleset_verified is True
+        assert engine.enforce_verification is True
         results = engine.evaluate(full_fields(), GOOD_QUALITY)
         decision = engine.fuse(results)
         assert decision.decision == "COMPLIANT"

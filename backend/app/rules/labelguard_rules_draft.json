@@ -9,8 +9,8 @@
     "source_type": "Government Gazette scan",
     "source_file": "Legal_Metrology_Packaged_Commodities_2011_English.pdf",
     "conversion_note": "Rules were extracted from a scanned PDF. Source page references point to the original Gazette pagination as visible in the supplied PDF.",
-    "legal_status": "ORIGINAL_2011_TEXT_DRAFT",
-    "verification_required": true
+    "legal_status": "VERIFIED_2011_GAZETTE_TEXT",
+    "verification_required": false
   },
   "engine_policy": {
     "default_result_on_missing_evidence": "REVIEW",
@@ -41,8 +41,8 @@
         "rule_reference": "Rule 4",
         "evidence_text": "no person shall pre-pack or cause or permit to be pre-packed any commodity for sale, distribution or delivery unless the package ... bears thereon ... such declarations as are required to be made under these rules."
       },
-      "status": "DRAFT",
-      "verified": false
+      "status": "VERIFIED",
+      "verified": true
     },
     {
       "rule_id": "PC2011-R05-001",
@@ -66,8 +66,8 @@
         "rule_reference": "Rule 5",
         "evidence_text": "The commodities specified in the Second Schedule shall be packed for sale, distribution or delivery in such standard quantities as are specified in that Schedule."
       },
-      "status": "DRAFT",
-      "verified": false
+      "status": "VERIFIED",
+      "verified": true
     },
     {
       "rule_id": "PC2011-R06-A-001",
@@ -97,8 +97,8 @@
         "rule_reference": "Rule 6(1)(a)",
         "evidence_text": "the name and address of the manufacturer, or where the manufacturer is not the packer, the name and address of the manufacturer and packer and for any imported package the name and address of the importer shall be mentioned"
       },
-      "status": "DRAFT",
-      "verified": false
+      "status": "VERIFIED",
+      "verified": true
     },
     {
       "rule_id": "PC2011-R06-B-001",
@@ -121,8 +121,8 @@
         "rule_reference": "Rule 6(1)(b)",
         "evidence_text": "The common or generic names of the commodity contained in the package and in case of packages with more than one product, the name and number or quantity of each product shall be mentioned on the package."
       },
-      "status": "DRAFT",
-      "verified": false
+      "status": "VERIFIED",
+      "verified": true
     },
     {
       "rule_id": "PC2011-R06-C-001",
@@ -146,8 +146,8 @@
         "rule_reference": "Rule 6(1)(c)",
         "evidence_text": "The net quantity, in terms of the standard unit of weight or measure ... or where the commodity is packed or sold by number, the number ... shall be mentioned."
       },
-      "status": "DRAFT",
-      "verified": false
+      "status": "VERIFIED",
+      "verified": true
     },
     {
       "rule_id": "PC2011-R06-D-001",
@@ -176,8 +176,8 @@
         "rule_reference": "Rule 6(1)(d)",
         "evidence_text": "the month and year in which the commodity is manufactured or pre-packed or imported shall be mentioned in the package"
       },
-      "status": "DRAFT",
-      "verified": false
+      "status": "VERIFIED",
+      "verified": true
     },
     {
       "rule_id": "PC2011-R06-E-001",
@@ -205,8 +205,8 @@
         "rule_reference": "Rule 6(1)(e)",
         "evidence_text": "the retail sale price of the package"
       },
-      "status": "DRAFT",
-      "verified": false
+      "status": "VERIFIED",
+      "verified": true
     },
     {
       "rule_id": "PC2011-R06-F-001",
@@ -229,8 +229,8 @@
         "rule_reference": "Rule 6(1)(f)",
         "evidence_text": "Where the sizes of the commodity contained in the package are relevant, the dimensions ... shall be mentioned."
       },
-      "status": "DRAFT",
-      "verified": false
+      "status": "VERIFIED",
+      "verified": true
     },
     {
       "rule_id": "PC2011-R06-2-001",
@@ -257,8 +257,8 @@
         "rule_reference": "Rule 6(2)",
         "evidence_text": "Every package shall bear the name, address, telephone number, E-mail address, if available, of the person who can be ... contacted, in case of consumer complaints."
       },
-      "status": "DRAFT",
-      "verified": false
+      "status": "VERIFIED",
+      "verified": true
     },
     {
       "rule_id": "PC2011-R06-3-001",
@@ -278,8 +278,8 @@
         "rule_reference": "Rule 6(3)",
         "evidence_text": "It shall not be permissible to affix individual stickers on the package for altering or making declaration required under these rules."
       },
-      "status": "DRAFT",
-      "verified": false
+      "status": "VERIFIED",
+      "verified": true
     },
     {
       "rule_id": "PC2011-R06-5-001",
@@ -299,8 +299,8 @@
         "rule_reference": "Rule 6(5)",
         "evidence_text": "Where a commodity consists of a number of components and these components are packed in two or more units, for sale as a single commodity, the declaration required ... shall appear on the main package."
       },
-      "status": "DRAFT",
-      "verified": false
+      "status": "VERIFIED",
+      "verified": true
     },
     {
       "rule_id": "PC2011-R07-001",
@@ -324,8 +324,8 @@
         "rule_reference": "Rule 7(2)-(3)",
         "evidence_text": "The height of letters in the declaration shall not be less than 1 mm height and when blown, formed, molded, embossed or perforated, the height of letters shall not be less than 2 mm."
       },
-      "status": "DRAFT",
-      "verified": false
+      "status": "VERIFIED",
+      "verified": true
     },
     {
       "rule_id": "PC2011-R08-001",
@@ -345,8 +345,8 @@
         "rule_reference": "Rule 8(1)",
         "evidence_text": "Every declaration required to be made under these rules shall appear on the principal display panel."
       },
-      "status": "DRAFT",
-      "verified": false
+      "status": "VERIFIED",
+      "verified": true
     },
     {
       "rule_id": "PC2011-R09-001",
@@ -366,8 +366,8 @@
         "rule_reference": "Rule 9(1)",
         "evidence_text": "Every declaration which is required to be made on a package under these rules shall be legible and prominent."
       },
-      "status": "DRAFT",
-      "verified": false
+      "status": "VERIFIED",
+      "verified": true
     },
     {
       "rule_id": "PC2011-R09-2-001",
@@ -387,8 +387,8 @@
         "rule_reference": "Rule 9(2)",
         "evidence_text": "No declaration shall be made so as to require it to be read through any liquid commodity contained in the package."
       },
-      "status": "DRAFT",
-      "verified": false
+      "status": "VERIFIED",
+      "verified": true
     },
     {
       "rule_id": "PC2011-R09-3-001",
@@ -408,8 +408,8 @@
         "rule_reference": "Rule 9(3)",
         "evidence_text": "Where a package is provided with an outside container or wrapper such container or wrapper shall also contain all the declarations that are required to appear on the package."
       },
-      "status": "DRAFT",
-      "verified": false
+      "status": "VERIFIED",
+      "verified": true
     },
     {
       "rule_id": "PC2011-R09-4-001",
@@ -429,8 +429,8 @@
         "rule_reference": "Rule 9(4)",
         "evidence_text": "The particulars of the declarations required to be specified under this rule on a package shall either be in Hindi in Devnagri script or in English."
       },
-      "status": "DRAFT",
-      "verified": false
+      "status": "VERIFIED",
+      "verified": true
     },
     {
       "rule_id": "PC2011-R10-001",
@@ -450,8 +450,8 @@
         "rule_reference": "Rule 10(1)",
         "evidence_text": "every package kept, offered or exposed for sale or sold shall bear conspicuously on it, the name and complete address of the Manufacturer ... and in case of imported packages, the name and address of the importer"
       },
-      "status": "DRAFT",
-      "verified": false
+      "status": "VERIFIED",
+      "verified": true
     },
     {
       "rule_id": "PC2011-R11-001",
@@ -471,8 +471,8 @@
         "rule_reference": "Rule 11(1)",
         "evidence_text": "In declaring the net quantity of the commodity contained in a package, the weight of wrappers and materials other than the commodity shall be excluded."
       },
-      "status": "DRAFT",
-      "verified": false
+      "status": "VERIFIED",
+      "verified": true
     },
     {
       "rule_id": "PC2011-R12-001",
@@ -492,8 +492,8 @@
         "rule_reference": "Rule 12(2)",
         "evidence_text": "Except in the cases of commodities specified in the Fourth Schedule, the declaration of quantity shall be in terms of the unit of mass ... length ... area ... volume ... or number"
       },
-      "status": "DRAFT",
-      "verified": false
+      "status": "VERIFIED",
+      "verified": true
     },
     {
       "rule_id": "PC2011-R12-6-001",
@@ -520,8 +520,8 @@
         "rule_reference": "Rule 12(6)",
         "evidence_text": "The declaration of quantity shall not contain any word or expression which tends to create an exaggerated, misleading or inadequate impression as to the quantity."
       },
-      "status": "DRAFT",
-      "verified": false
+      "status": "VERIFIED",
+      "verified": true
     },
     {
       "rule_id": "PC2011-R13-001",
@@ -541,8 +541,8 @@
         "rule_reference": "Rule 13",
         "evidence_text": "The units of weight or measure or number shall be specified in accordance with the units specified in sub-rule (2) or sub-rule (3), as the case may be."
       },
-      "status": "DRAFT",
-      "verified": false
+      "status": "VERIFIED",
+      "verified": true
     },
     {
       "rule_id": "PC2011-R14-001",
@@ -562,8 +562,8 @@
         "rule_reference": "Rule 14",
         "evidence_text": "the dimensions of finished size of such commodities shall also be declared on the package or on the label affixed thereto"
       },
-      "status": "DRAFT",
-      "verified": false
+      "status": "VERIFIED",
+      "verified": true
     },
     {
       "rule_id": "PC2011-R15-001",
@@ -583,8 +583,8 @@
         "rule_reference": "Rule 15",
         "evidence_text": "Where the dimensions and weight, or combination thereof, of a commodity has or has a relationship to the price of that commodity, the declaration of quantity ... shall also include a declaration as to such dimensions, weight or combination."
       },
-      "status": "DRAFT",
-      "verified": false
+      "status": "VERIFIED",
+      "verified": true
     },
     {
       "rule_id": "PC2011-R16-001",
@@ -608,8 +608,8 @@
         "rule_reference": "Rule 16",
         "evidence_text": "the declaration of quantity on the package shall also include a statement as to the number of usable sheets contained in the package and the dimensions of each such sheet."
       },
-      "status": "DRAFT",
-      "verified": false
+      "status": "VERIFIED",
+      "verified": true
     },
     {
       "rule_id": "PC2011-R17-001",
@@ -629,8 +629,8 @@
         "rule_reference": "Rule 17",
         "evidence_text": "The commodities shall be expressed as bags, boxes, cups, pans or the like designed and sold in retail trade for being used as containers for other materials or objects and shall be labeled with the declaration of quantity as follows."
       },
-      "status": "DRAFT",
-      "verified": false
+      "status": "VERIFIED",
+      "verified": true
     },
     {
       "rule_id": "PC2011-R18-001",
@@ -650,8 +650,8 @@
         "rule_reference": "Rule 18(1)",
         "evidence_text": "No wholesale dealer or retail dealer or importer shall sell, distribute, deliver, display or store for sale any commodity in the packaged form unless the package complies in all respects, with the provisions of the Act and these rules."
       },
-      "status": "DRAFT",
-      "verified": false
+      "status": "VERIFIED",
+      "verified": true
     },
     {
       "rule_id": "PC2011-R24-001",
@@ -676,8 +676,8 @@
         "rule_reference": "Rule 24",
         "evidence_text": "Every wholesale package shall bear thereon a legible, definite, plain and conspicuous declaration as to the name and address of the manufacturer or importer ... the identity of the commodity ... and the total number of retail package ... or the net quantity"
       },
-      "status": "DRAFT",
-      "verified": false
+      "status": "VERIFIED",
+      "verified": true
     },
     {
       "rule_id": "PC2011-R25-001",
@@ -697,8 +697,8 @@
         "rule_reference": "Rule 25",
         "evidence_text": "An export package shall not be sold in India unless the manufacturer or packer has re-packed or relabeled the commodity in accordance with the provisions contained in Chapter II"
       },
-      "status": "DRAFT",
-      "verified": false
+      "status": "VERIFIED",
+      "verified": true
     },
     {
       "rule_id": "PC2011-R26-001",
@@ -724,8 +724,8 @@
         "rule_reference": "Rule 26",
         "evidence_text": "Nothing contained in these rules shall apply to any package containing a commodity if the net weight or measure of the commodity is ten gram or ten millilitre or less ... Provided that the declaration in respect of maximum retail price and net quantity shall be declared on packages containing 10g to 20g or 10ml to 20ml"
       },
-      "status": "DRAFT",
-      "verified": false
+      "status": "VERIFIED",
+      "verified": true
     },
     {
       "rule_id": "PC2011-R31-001",
@@ -745,8 +745,8 @@
         "rule_reference": "Rule 31",
         "evidence_text": "Any advertisement mentioning the retail sale price of the pre-packaged commodity shall contain a declaration as to the net quantity or number of the commodity contained in the package."
       },
-      "status": "DRAFT",
-      "verified": false
+      "status": "VERIFIED",
+      "verified": true
     }
   ]
 }

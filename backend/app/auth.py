@@ -46,6 +46,44 @@ ROLE_RANK = {INSPECTOR: 1, SUPERVISOR: 2, ADMIN: 3}
 
 PBKDF2_ITERATIONS = 240_000
 TOKEN_TTL_SECONDS = int(os.environ.get("AUTH_TOKEN_TTL_SECONDS", 8 * 3600))
+MAX_FAILED_ATTEMPTS = 5
+LOCKOUT_DURATION_SECONDS = 900
+_failed_login_attempts: Dict[str, Dict[str, Any]] = {}
+
+
+def is_account_locked(username: str) -> bool:
+    info = _failed_login_attempts.get(username)
+    if not info:
+        return False
+    if info.get("locked_until", 0) > time.time():
+        return True
+    # Lockout expired
+    if info.get("locked_until", 0) > 0:
+        _failed_login_attempts.pop(username, None)
+    return False
+
+
+def _record_failed_attempt(username: str, role: Optional[str] = None):
+    now = time.time()
+    info = _failed_login_attempts.get(username, {"count": 0, "locked_until": 0})
+    count = info["count"] + 1
+    locked_until = 0
+    if count >= MAX_FAILED_ATTEMPTS:
+        locked_until = now + LOCKOUT_DURATION_SECONDS
+        database.write_audit(
+            action="ACCOUNT_LOCKED",
+            actor=username,
+            actor_role=role,
+            entity_type="user",
+            entity_id=username,
+            outcome="LOCKED",
+            details={"failed_attempts": count, "lockout_seconds": LOCKOUT_DURATION_SECONDS},
+        )
+    _failed_login_attempts[username] = {"count": count, "locked_until": locked_until}
+
+
+def _clear_failed_attempts(username: str):
+    _failed_login_attempts.pop(username, None)
 
 
 def auth_enabled() -> bool:
@@ -187,8 +225,19 @@ def authenticate(username: str, password: str) -> Optional[Dict[str, Any]]:
     """Return a token bundle, or None. Failures are audited without the
     attempted password."""
     username = (username or "").strip().lower()
+    if is_account_locked(username):
+        database.write_audit(
+            action="LOGIN_LOCKED_OUT",
+            actor=username,
+            entity_type="user",
+            entity_id=username,
+            outcome="DENIED",
+            details={"reason": "account_locked"},
+        )
+        return None
     record = database.get_user_record(username)
     if record is None or not record.active:
+        _record_failed_attempt(username)
         database.write_audit(
             action="LOGIN_FAILED",
             actor=username or "unknown",
@@ -201,6 +250,7 @@ def authenticate(username: str, password: str) -> Optional[Dict[str, Any]]:
     if not verify_password(
         password, record.password_hash, record.salt, record.iterations
     ):
+        _record_failed_attempt(username, record.role)
         database.write_audit(
             action="LOGIN_FAILED",
             actor=username,
@@ -211,6 +261,7 @@ def authenticate(username: str, password: str) -> Optional[Dict[str, Any]]:
             details={"reason": "bad_password"},
         )
         return None
+    _clear_failed_attempts(username)
     token = create_token(record.username, record.role)
     database.write_audit(
         action="LOGIN",

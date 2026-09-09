@@ -54,7 +54,7 @@ class TestLabelGuardBasics:
 
     def test_ruleset_loads(self):
         assert len(self.engine.rules) == 31
-        assert self.engine.ruleset_verified is False
+        assert self.engine.ruleset_verified is True
 
     def test_fully_compliant_package(self):
         results = self.engine.evaluate(full_compliant_fields(), GOOD_QUALITY)
@@ -271,7 +271,8 @@ class TestAggregateAndVerification:
         assert "PC2011-R04-001" in decision.failed_rules
 
     def test_enforce_verification_blocks_unverified_rules(self):
-        engine = LabelGuardEngine(enforce_verification=True)
+        unverified_rules = [dict(r, verified=False) for r in self.engine.rules]
+        engine = LabelGuardEngine(rules=unverified_rules, enforce_verification=True)
         results = engine.evaluate(full_compliant_fields(), GOOD_QUALITY)
         assert all(r.status == "UNVERIFIED" for r in results)
         decision = engine.fuse(results)

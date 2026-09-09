@@ -3,7 +3,7 @@
 Every outcome is audited. Passwords are never echoed, logged or returned.
 """
 
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 
@@ -59,3 +59,27 @@ def create_user(
         )
     except ValueError as e:
         raise HTTPException(status_code=422, detail=str(e))
+
+
+@router.post("/admin/retention/purge")
+def trigger_retention_purge(
+    retention_days: Optional[int] = None,
+    principal: Dict[str, Any] = Depends(auth.require_role(auth.ADMIN)),
+):
+    """Purge records older than retention_days (Admin only)."""
+    purged = database.purge_expired_records(retention_days=retention_days)
+    database.write_audit(
+        action="DATA_RETENTION_PURGE",
+        actor=auth.principal_id(principal),
+        actor_role=auth.principal_role(principal),
+        outcome="SUCCESS",
+        details={
+            "retention_days": retention_days or database.DEFAULT_RETENTION_DAYS,
+            "purged": purged,
+        },
+    )
+    return {
+        "status": "success",
+        "retention_days": retention_days or database.DEFAULT_RETENTION_DAYS,
+        "purged": purged,
+    }

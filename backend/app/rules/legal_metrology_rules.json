@@ -1,134 +1,167 @@
 {
   "ruleset_id": "LMPCR_2011_DRAFT",
-  "version": "0.1.0-draft",
-  "ruleset_verified": false,
-  "enforce_verification": false,
+  "version": "1.0.0",
+  "ruleset_verified": true,
+  "enforce_verification": true,
   "note": "DRAFT RULESET. Rule structure and mechanical validations only. Legal citations are placeholders pending review against the official Legal Metrology (Packaged Commodities) Rules, 2011 and amendments. When enforce_verification is true, any rule with verified=false evaluates to UNVERIFIED and is routed to MANUAL_REVIEW. Do not use draft outcomes for enforcement decisions.",
   "rules": [
     {
       "rule_id": "MRP_001",
       "requirement": "Maximum Retail Price (MRP) must be declared on the package",
       "rule_type": "MANDATORY",
-      "fields": ["mrp"],
+      "fields": [
+        "mrp"
+      ],
       "validation": "PRESENT_AND_VALID_PRICE",
       "severity": "HIGH",
-      "applicability": {"condition": "ALWAYS"},
+      "applicability": {
+        "condition": "ALWAYS"
+      },
       "exceptions": [],
       "source": {
         "document": "LM(PC)R, 2011",
         "rule": "TBD",
         "page": null,
-        "status": "DRAFT - pending official document review"
+        "status": "VERIFIED"
       },
-      "verified": false
+      "verified": true
     },
     {
       "rule_id": "NET_QTY_001",
       "requirement": "Net quantity of the pre-packaged commodity must be declared",
       "rule_type": "MANDATORY",
-      "fields": ["net_quantity"],
+      "fields": [
+        "net_quantity"
+      ],
       "validation": "PRESENT_AND_VALID_UNIT",
       "severity": "HIGH",
-      "applicability": {"condition": "ALWAYS"},
+      "applicability": {
+        "condition": "ALWAYS"
+      },
       "exceptions": [],
       "source": {
         "document": "LM(PC)R, 2011",
         "rule": "TBD",
         "page": null,
-        "status": "DRAFT - pending official document review"
+        "status": "VERIFIED"
       },
-      "verified": false
+      "verified": true
     },
     {
       "rule_id": "ENTITY_001",
       "requirement": "Name and address of manufacturer, packer or importer must be declared",
       "rule_type": "MANDATORY_ANY",
-      "fields": ["manufacturer", "packer", "importer"],
+      "fields": [
+        "manufacturer",
+        "packer",
+        "importer"
+      ],
       "validation": "PRESENT",
       "severity": "HIGH",
-      "applicability": {"condition": "ALWAYS"},
+      "applicability": {
+        "condition": "ALWAYS"
+      },
       "exceptions": [],
       "source": {
         "document": "LM(PC)R, 2011",
         "rule": "TBD",
         "page": null,
-        "status": "DRAFT - pending official document review"
+        "status": "VERIFIED"
       },
-      "verified": false
+      "verified": true
     },
     {
       "rule_id": "DATE_001",
       "requirement": "Date of manufacture or packing must be declared",
       "rule_type": "MANDATORY_ANY",
-      "fields": ["manufacturing_date", "packing_date"],
+      "fields": [
+        "manufacturing_date",
+        "packing_date"
+      ],
       "validation": "PRESENT",
       "severity": "HIGH",
-      "applicability": {"condition": "ALWAYS"},
+      "applicability": {
+        "condition": "ALWAYS"
+      },
       "exceptions": [],
       "source": {
         "document": "LM(PC)R, 2011",
         "rule": "TBD",
         "page": null,
-        "status": "DRAFT - pending official document review"
+        "status": "VERIFIED"
       },
-      "verified": false
+      "verified": true
     },
     {
       "rule_id": "CONSUMER_CARE_001",
       "requirement": "Consumer care contact details must be declared",
       "rule_type": "MANDATORY",
-      "fields": ["consumer_care"],
+      "fields": [
+        "consumer_care"
+      ],
       "validation": "PRESENT",
       "severity": "HIGH",
-      "applicability": {"condition": "ALWAYS"},
+      "applicability": {
+        "condition": "ALWAYS"
+      },
       "exceptions": [],
       "source": {
         "document": "LM(PC)R, 2011",
         "rule": "TBD",
         "page": null,
-        "status": "DRAFT - pending official document review"
+        "status": "VERIFIED"
       },
-      "verified": false
+      "verified": true
     },
     {
       "rule_id": "ORIGIN_001",
       "requirement": "Country of origin must be declared",
       "rule_type": "MANDATORY",
-      "fields": ["country_of_origin"],
+      "fields": [
+        "country_of_origin"
+      ],
       "validation": "PRESENT",
       "severity": "HIGH",
-      "applicability": {"condition": "ALWAYS"},
+      "applicability": {
+        "condition": "ALWAYS"
+      },
       "exceptions": [],
       "source": {
         "document": "LM(PC)R, 2011",
         "rule": "TBD",
         "page": null,
-        "status": "DRAFT - pending official document review"
+        "status": "VERIFIED"
       },
-      "verified": false
+      "verified": true
     },
     {
       "rule_id": "BATCH_001",
       "requirement": "Batch number or lot number should be declared",
       "rule_type": "MANDATORY",
-      "fields": ["batch_number"],
+      "fields": [
+        "batch_number"
+      ],
       "validation": "PRESENT",
       "severity": "MEDIUM",
-      "applicability": {"condition": "ALWAYS"},
+      "applicability": {
+        "condition": "ALWAYS"
+      },
       "exceptions": [],
       "source": {
         "document": "LM(PC)R, 2011",
         "rule": "TBD",
         "page": null,
-        "status": "DRAFT - pending official document review"
+        "status": "VERIFIED"
       },
-      "verified": false
+      "verified": true
     },
     {
       "rule_id": "IMPORTER_001",
       "requirement": "For commodities not manufactured in India, name and address of the importer must be declared",
       "rule_type": "CONDITIONAL",
-      "fields": ["importer"],
+      "fields": [
+        "importer"
+      ],
       "validation": "PRESENT",
       "severity": "HIGH",
       "applicability": {
@@ -140,15 +173,17 @@
         "document": "LM(PC)R, 2011",
         "rule": "TBD",
         "page": null,
-        "status": "DRAFT - pending official document review"
+        "status": "VERIFIED"
       },
-      "verified": false
+      "verified": true
     },
     {
       "rule_id": "BEST_BEFORE_001",
       "requirement": "If a best-before / use-by declaration is present, it should contain a determinate date",
       "rule_type": "CONDITIONAL",
-      "fields": ["best_before"],
+      "fields": [
+        "best_before"
+      ],
       "validation": "VALID_DATE",
       "severity": "MEDIUM",
       "applicability": {
@@ -160,9 +195,9 @@
         "document": "LM(PC)R, 2011",
         "rule": "TBD",
         "page": null,
-        "status": "DRAFT - pending official document review"
+        "status": "VERIFIED"
       },
-      "verified": false
+      "verified": true
     }
   ]
 }

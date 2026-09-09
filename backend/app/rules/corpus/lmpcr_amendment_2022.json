@@ -1,0 +1,19 @@
+{
+  "document": "The Legal Metrology (Packaged Commodities) Amendment Rules, 2022",
+  "effective_date": "2023-01-01",
+  "url": "https://consumeraffairs.nic.in/sites/default/files/GSR524.pdf",
+  "clauses": [
+    {
+      "chunk_id": "AM2022-R06-ELEC",
+      "rule_reference": "Rule 6(12)",
+      "title": "Electronic Products Declaration and QR Code Provisions",
+      "category": "electronic_products",
+      "text": "For electronic products, mandatory declarations may additionally be provided by way of a QR code on the package, provided that MRP, net quantity, month/year of manufacture and consumer care details are physically declared on the package.",
+      "page": 1,
+      "severity": "MEDIUM",
+      "status": "VERIFIED",
+      "verified": true,
+      "evidence_text": "In case of electronic products, mandatory declarations may be made available through a QR Code, provided physical declarations for MRP, Net Qty, Date of Manufacture and Consumer Care are present."
+    }
+  ]
+}

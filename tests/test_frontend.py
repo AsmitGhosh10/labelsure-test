@@ -291,6 +291,8 @@ class TestCardContrast:
             (ui._bar_chart("Violations", [{"label": "R1", "count": 3}]), "bar chart"),
             (ui._bar_chart("Violations", []), "empty bar chart"),
             (ui._stat_tile("Total", 7), "stat tile"),
+            (ui.auth_status_html(), "auth status"),
+            (ui.auth_login_html("", ""), "auth login failed"),
         )
 
     def test_no_bare_bold_or_span(self, sample_result):
@@ -356,3 +358,28 @@ class TestVerdictExplains:
         markup = ui.verdict_html(hostile)
         assert "<script>" not in markup
         assert "&lt;script&gt;" in markup
+
+
+class TestAuthLoginUI:
+    def test_auth_login_empty_credentials(self):
+        markup = ui.auth_login_html("", "")
+        assert "Login failed" in markup
+        assert "Username and password are required" in markup
+
+    def test_auth_login_invalid_credentials(self):
+        markup = ui.auth_login_html("nonexistent_user", "wrong_pass")
+        assert "Login failed" in markup
+        assert "Invalid username or password" in markup
+
+    def test_auth_login_successful(self):
+        from backend.app import auth
+        auth.create_user("ui_test_user", "password123", auth.INSPECTOR)
+        markup = ui.auth_login_html("ui_test_user", "password123")
+        assert "Logged in successfully" in markup
+        assert "ui_test_user" in markup
+        assert "Bearer Token" in markup
+
+    def test_auth_status_renders(self):
+        markup = ui.auth_status_html()
+        assert "Authentication Status" in markup
+        assert "Registered Users" in markup

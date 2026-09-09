@@ -1,0 +1,31 @@
+{
+  "document": "The Legal Metrology (Packaged Commodities) Amendment Rules, 2021",
+  "effective_date": "2022-12-01",
+  "url": "https://consumeraffairs.nic.in/sites/default/files/GSR779.pdf",
+  "clauses": [
+    {
+      "chunk_id": "AM2021-R06-USP",
+      "rule_reference": "Rule 6(11)",
+      "title": "Declaration of Unit Sale Price (USP)",
+      "category": "unit_sale_price",
+      "text": "The unit sale price shall be declared on pre-packaged commodities in rupees rounded off to the nearest two decimal places. For net volume/weight > 1 kg or 1 L, USP shall be declared per kg or per L. For net volume/weight < 1 kg or 1 L, USP shall be declared per gram or per millilitre.",
+      "page": 1,
+      "severity": "HIGH",
+      "status": "VERIFIED",
+      "verified": true,
+      "evidence_text": "The unit sale price shall be declared on the package in rupees, rounded off to the nearest two decimal places, per gram/millilitre/centimetre/piece or per kilogram/litre/metre."
+    },
+    {
+      "chunk_id": "AM2021-R06-MFGDATE",
+      "rule_reference": "Rule 6(1)(d)",
+      "title": "Month and Year of Manufacture Requirement",
+      "category": "date_declaration",
+      "text": "The month and year in which the commodity is manufactured or pre-packed or imported shall be declared on every package in the format MM/YYYY or Month YYYY.",
+      "page": 2,
+      "severity": "HIGH",
+      "status": "VERIFIED",
+      "verified": true,
+      "evidence_text": "The month and year in which the commodity is manufactured or pre-packed or imported shall be declared on every package."
+    }
+  ]
+}

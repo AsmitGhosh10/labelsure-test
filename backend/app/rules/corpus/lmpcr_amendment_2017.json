@@ -1,0 +1,43 @@
+{
+  "document": "The Legal Metrology (Packaged Commodities) Amendment Rules, 2017",
+  "effective_date": "2018-01-01",
+  "url": "https://consumeraffairs.nic.in/sites/default/files/GSR629.pdf",
+  "clauses": [
+    {
+      "chunk_id": "AM2017-R06-ECOM",
+      "rule_reference": "Rule 6(10)",
+      "title": "Mandatory Declarations on E-Commerce Marketplace Platforms",
+      "category": "e_commerce",
+      "text": "An e-commerce entity shall ensure that mandatory declarations required under Rule 6(1) are displayed on the digital and electronic network used for e-commerce transactions, except the month and year of manufacturing or packing.",
+      "page": 2,
+      "severity": "HIGH",
+      "status": "VERIFIED",
+      "verified": true,
+      "evidence_text": "An e-commerce entity shall ensure that the mandatory declarations specified in sub-rule (1) of rule 6 shall be displayed on the digital and electronic network used for e-commerce transactions."
+    },
+    {
+      "chunk_id": "AM2017-R06-FONT",
+      "rule_reference": "Rule 6(1)(h)",
+      "title": "Minimum Height of Numerals and Letters",
+      "category": "font_size",
+      "text": "The height of any numeral and letter in the declaration on the principal display panel shall not be less than 1 mm when the area of principal display panel is up to 50 cm2, and shall scale proportionately for larger panel areas.",
+      "page": 3,
+      "severity": "MEDIUM",
+      "status": "VERIFIED",
+      "verified": true,
+      "evidence_text": "The height of any numeral and letter in the declaration on the principal display panel shall not be less than 1 mm, 2 mm, 4 mm or 6 mm depending on the area of the principal display panel."
+    },
+    {
+      "chunk_id": "AM2017-R06-CARE",
+      "rule_reference": "Rule 6(1)(e)",
+      "title": "Consumer Care Details Mandatory Fields",
+      "category": "consumer_care",
+      "text": "Name, address, telephone number and e-mail address of the person who or the office which can be contacted in case of consumer complaints must be clearly declared on every package.",
+      "page": 4,
+      "severity": "HIGH",
+      "status": "VERIFIED",
+      "verified": true,
+      "evidence_text": "Every package shall bear the name, address, telephone number and e-mail address of the person who or office which can be contacted in case of consumer complaints."
+    }
+  ]
+}

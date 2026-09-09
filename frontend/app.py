@@ -25,7 +25,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import gradio as gr
 
-from backend.app import database
+from backend.app import auth, database
 from backend.app.services import hitl, legal, pdf_report
 from backend.app.services.pipeline import InspectionPipeline, MAX_SURFACES
 from backend.app.services.report_generator import (
@@ -634,6 +634,66 @@ def load_dashboard():
     return tiles_html, violations_html, manufacturers_html, categories_html, trend_rows
 
 
+def auth_login_html(username: str, password: str) -> str:
+    if not username or not password:
+        return (
+            "<div style='border-left:4px solid #c62828; background:#ffebee; "
+            "padding:10px 14px; border-radius:6px; margin:8px 0; color:#b71c1c;'>"
+            "<b style='color:#b71c1c;'>❌ Login failed:</b> "
+            "<span style='color:#b71c1c;'>Username and password are required.</span>"
+            "</div>"
+        )
+    res = auth.authenticate(username, password)
+    if not res:
+        return (
+            "<div style='border-left:4px solid #c62828; background:#ffebee; "
+            "padding:10px 14px; border-radius:6px; margin:8px 0; color:#b71c1c;'>"
+            "<b style='color:#b71c1c;'>❌ Login failed:</b> "
+            "<span style='color:#b71c1c;'>Invalid username or password.</span>"
+            "</div>"
+        )
+    user = _esc(res.get("username"))
+    role = _esc(res.get("role"))
+    token = _esc(res.get("access_token"))
+    ttl = res.get("expires_in", 28800)
+    return (
+        "<div style='border-left:4px solid #1a7f37; background:#e8f5e9; "
+        "padding:12px 16px; border-radius:6px; margin:8px 0; color:#1b5e20;'>"
+        f"<b style='color:#1b5e20;'>✅ Logged in successfully</b><br>"
+        f"<div style='margin-top:6px; font-size:0.95em; color:#1b5e20;'>"
+        f"<b style='color:#1b5e20;'>User:</b> <span style='color:#1b5e20;'>{user}</span> &nbsp;|&nbsp; "
+        f"<b style='color:#1b5e20;'>Role:</b> <span style='color:#1b5e20;'>{role}</span> &nbsp;|&nbsp; "
+        f"<b style='color:#1b5e20;'>Expires:</b> <span style='color:#1b5e20;'>{ttl}s</span><br>"
+        f"<div style='margin-top:4px; font-family:monospace; background:#ffffff; padding:6px; border-radius:4px; border:1px solid #c8e6c9; color:#1b5e20; overflow-x:auto;'>"
+        f"<b style='color:#1b5e20;'>Bearer Token:</b> <span style='color:#1b5e20;'>{token}</span>"
+        f"</div>"
+        f"</div>"
+        "</div>"
+    )
+
+
+def auth_status_html() -> str:
+    status = auth.describe()
+    enabled = "ACTIVE (Enforced)" if status.get("enabled") else "DISABLED (Development Mode)"
+    roles = ", ".join(status.get("roles", []))
+    users_count = status.get("users", 0)
+    border = "#1a7f37" if status.get("enabled") else "#b26a00"
+    bg = "#e8f5e9" if status.get("enabled") else "#fff8e1"
+    txt = "#1b5e20" if status.get("enabled") else "#4a3a10"
+    return (
+        f"<div style='border-left:4px solid {border}; background:{bg}; "
+        f"padding:12px 16px; border-radius:6px; margin:8px 0; color:{txt};'>"
+        f"<b style='color:{border};'>🔐 Authentication Status</b><br>"
+        f"<div style='margin-top:6px; font-size:0.95em; color:{txt};'>"
+        f"<b style='color:{txt};'>Enforcement:</b> <span style='color:{border}; font-weight:bold;'>{enabled}</span><br>"
+        f"<b style='color:{txt};'>Registered Users:</b> <span style='color:{txt};'>{users_count}</span><br>"
+        f"<b style='color:{txt};'>Available Roles:</b> <span style='color:{txt};'>{roles}</span><br>"
+        f"<b style='color:{txt};'>Token TTL:</b> <span style='color:{txt};'>{status.get('token_ttl_seconds')} seconds</span>"
+        f"</div>"
+        f"</div>"
+    )
+
+
 # ----------------------------------------------------------------------
 # UI
 # ----------------------------------------------------------------------
@@ -892,6 +952,17 @@ def build_app():
                     label="Inspections per day",
                 )
 
+            # ---------------------------------------------------- Auth / Login
+            with gr.Tab("🔐 Auth / Login"):
+                gr.Markdown("### API Authentication & User Session")
+                with gr.Row():
+                    login_user_input = gr.Textbox(label="Username", placeholder="e.g. inspector1")
+                    login_pass_input = gr.Textbox(label="Password", type="password", placeholder="Enter password")
+                with gr.Row():
+                    login_btn = gr.Button("🔑 Login", variant="primary")
+                    auth_status_btn = gr.Button("ℹ️ Check Auth Status")
+                auth_result_view = gr.HTML(auth_status_html())
+
         # ------------------------------------------------------------------
         # wiring
         # ------------------------------------------------------------------
@@ -939,6 +1010,15 @@ def build_app():
                 dash_tiles, dash_violations, dash_manufacturers, dash_categories,
                 dash_trend,
             ],
+        )
+        login_btn.click(
+            auth_login_html,
+            inputs=[login_user_input, login_pass_input],
+            outputs=[auth_result_view],
+        )
+        auth_status_btn.click(
+            auth_status_html,
+            outputs=[auth_result_view],
         )
 
     return app
