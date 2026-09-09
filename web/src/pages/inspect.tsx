@@ -9,6 +9,7 @@ import {
 } from "lucide-react"
 import { toast } from "sonner"
 
+import { CameraCapture } from "@/components/camera-capture"
 import { InspectionReport } from "@/components/inspection-report"
 import { Disclaimer } from "@/components/disclaimer"
 import { Button } from "@/components/ui/button"
@@ -162,17 +163,24 @@ export function InspectPage() {
                 <div className="flex flex-col gap-1">
                   <p className="text-sm font-medium">Drop photographs here</p>
                   <p className="text-muted-foreground text-sm">
-                    JPEG, PNG, WebP, BMP or TIFF, up to 20 MB each
+                    JPEG, PNG, WebP, BMP or TIFF, up to 20 MB each — or
+                    photograph the package directly
                   </p>
                 </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => inputRef.current?.click()}
-                >
-                  Choose files
-                </Button>
+                <div className="flex flex-wrap items-center justify-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => inputRef.current?.click()}
+                  >
+                    Choose files
+                  </Button>
+                  <CameraCapture
+                    onCapture={(file) => addFiles([file])}
+                    disabled={surfaces.length >= MAX_SURFACES}
+                  />
+                </div>
                 <input
                   id="surface-input"
                   ref={inputRef}

@@ -31,12 +31,27 @@ same prefix-stripping rule the dev proxy uses.
 | Route               | What it is                                                        |
 | ------------------- | ----------------------------------------------------------------- |
 | `/`                 | Landing page: what the system does, and what it refuses to do      |
-| `/inspect`          | Upload up to six surfaces of one package and run a screening       |
+| `/inspect`          | Upload or photograph up to six surfaces and run a screening        |
 | `/inspections/:id`  | A stored screening, with evidence and sign-off                     |
 | `/ask`              | Regulation question answering (RAG) with citations                 |
 | `/regulations`      | Keyword and lexical-vector search over the regulation corpus       |
 | `/queue`            | The sign-off backlog, least confident first                        |
 | `/dashboard`        | Repository statistics (supervisor role)                            |
+
+## Camera capture
+
+The inspect page can photograph a surface directly with `getUserMedia` and a
+canvas, no dependency. Two details are load-bearing:
+
+- **The stream stops on every exit path.** A camera left running keeps the
+  hardware indicator lit, which reads as spyware.
+- **Capture asks for the highest resolution the device offers.** The
+  declarations being read are small print, and a 640x480 frame produces OCR
+  failures that surface as compliance findings.
+
+`getUserMedia` needs a secure context. It works on `localhost`; over plain HTTP
+on any other hostname the API is absent and the dialog says so rather than
+failing with a bare `TypeError`.
 
 ## Authentication
 
