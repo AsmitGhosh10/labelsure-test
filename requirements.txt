@@ -34,3 +34,7 @@ httpx>=0.27                  # required by fastapi.testclient
 # python-dotenv loads the local .env; plain environment variables work without it.
 groq>=1,<2
 python-dotenv>=1,<2
+
+# PostgreSQL driver. Only needed when DATABASE_URL points at Postgres
+# (e.g. Neon); SQLite is the default and needs nothing.
+psycopg[binary]>=3,<4

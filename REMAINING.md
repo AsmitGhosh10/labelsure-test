@@ -6,7 +6,7 @@ previous revision of this document.
 
 **Purpose:** Map every PRD requirement to built / not-built, honestly.
 
-**Suite:** 480 tests, all passing.
+**Suite:** 499 tests, all passing.
 **Response schema:** `labelguard-inspection/1.1`.
 **Implementation reports:** `docs/progress/STEP_01…STEP_06`.
 
@@ -24,7 +24,7 @@ That revision contradicted itself in several places, and its header was stale.
 
 | Claim | Reality |
 |---|---|
-| "Suite: 418 tests" | 480, after the RAG and frontend work |
+| "Suite: 418 tests" | 499, after the RAG, frontend and Postgres work |
 | Summary: "Configurable data retention implemented" / §30 table: "❌" | Implemented. `database.purge_expired_records`, with an admin route and tests |
 | Summary: "Corpus amendments ingested (2017, 2021, 2022)" / priority list: "🟡 P1 Supply real amendment data" | Ingested. Three files in `backend/app/rules/corpus/`, 37 chunks total |
 | §39: "The project is not a git repository" | It is, with a remote and pushed history |
@@ -56,10 +56,10 @@ That revision contradicted itself in several places, and its header was stale.
 | Gradio frontend | 100% | — |
 | React frontend | 100% | No automated tests |
 | FastAPI backend | 100% | 32 endpoints |
-| Database | 100% | SQLite default; PostgreSQL supported, never exercised |
+| Database | 100% | SQLite default; verified against Neon Postgres |
 | Security | 95% | Rate limiting and TLS are deployment-layer |
 | **Performance (§31)** | **30%** | **Misses the latency targets by ~13× — the one real functional gap** |
-| Testing | 100% | 480 Python tests; none for the React app |
+| Testing | 100% | 499 Python tests; none for the React app |
 | Documentation | 100% | — |
 | Git | 100% | Branch `test-branch` pushed |
 
@@ -171,7 +171,7 @@ score → citations → evidence overlay → report → sign-off`.
 | Computer Vision | OpenCV + Pillow + NumPy | ✅ |
 | RAG | Existing Multimodal RAG project | ✅ adapted — see §8 |
 | LLM | extraction / normalisation / explanation | ⚠️ used only for regulation question answering. Never in a verdict |
-| Database | PostgreSQL | ⚠️ SQLite default; portable DSN, never deployed on PostgreSQL |
+| Database | PostgreSQL | ✅ SQLite default, Neon Postgres verified end to end |
 | Storage | Local / MinIO | Local |
 | Reports | ReportLab | ✅ |
 
@@ -347,10 +347,10 @@ image → recapture. An OCR engine error is reported as a *system* fault, so the
 user is told that recapturing will not help.
 
 ### 34. Testing
-✅ 480 tests. Formal PRD scenarios A–F in `tests/test_prd_scenarios.py`, plus a
+✅ 499 tests. Formal PRD scenarios A–F in `tests/test_prd_scenarios.py`, plus a
 matrix test asserting the scenarios genuinely differ.
 
-⚠️ **All 480 are Python.** The React app has no vitest or Playwright coverage;
+⚠️ **All 499 are Python.** The React app has no vitest or Playwright coverage;
 its correctness rests on TypeScript and manual verification.
 
 ### 35. Legal Safety Rule
@@ -372,7 +372,7 @@ PDF, API. "Automated legal enforcement" appears nowhere.
 |-----------|--------|
 | Code implemented | ✅ |
 | Integration completed | ✅ |
-| Tests written | ✅ 480 |
+| Tests written | ✅ 499 |
 | Tests executed | ✅ all passing |
 | Errors handled | ✅ every subsystem degrades rather than failing the inspection |
 | Documentation updated | ✅ |
@@ -397,10 +397,9 @@ scored, 18 correctly excluded as not assessable.
 | 🔴 P0 | Fix the `AM2017-R06-CARE` rule reference | Small, needs the amendment text | A wrong citation carries legal weight |
 | 🟠 P1 | Async pipeline so a 60 s screening does not hold an HTTP worker | Medium | The cheapest real improvement while OCR stays slow |
 | 🟠 P1 | GPU inference, or re-enable oneDNN once paddlepaddle is fixed | Deployment | The actual path to §31 |
-| 🟡 P2 | Tests for the React app | Medium | 480 tests, none of them frontend |
+| 🟡 P2 | Tests for the React app | Medium | 499 tests, none of them frontend |
 | 🟡 P2 | Decide between the two frontends | Small | Both live against one schema; each change costs double |
 | 🟡 P2 | Neural embeddings behind `set_vectorizer()` | Medium | Seam exists and is tested. At 37 chunks, little to gain |
-| 🟡 P2 | PostgreSQL deployment + migration exercise | Medium | Models are portable, never exercised |
 | 🟡 P2 | Response caching | Medium | Only worth it once latency is addressed |
 | 🟢 P3 | Rate limiting, TLS termination | Deployment layer | Outside the codebase |
 | 🟢 P3 | Rule editing through the API | Medium | Rules are JSON today, reviewable by a non-programmer |

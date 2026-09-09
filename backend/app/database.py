@@ -36,9 +36,21 @@ DATABASE_URL = os.environ.get(
 # Module-level engine (import-time); fallback to sqlite if the configured
 # DSN is unreachable at first use is handled by callers being best-effort.
 is_sqlite = DATABASE_URL.startswith("sqlite")
+
+# Serverless Postgres (Neon and similar) suspends an idle compute and drops
+# its connections. A pooled connection handed out afterwards is dead, and the
+# first query on it raises rather than reconnecting, so every checkout is
+# tested first. recycle keeps connections below the proxy's own idle timeout.
+_pool_kwargs = (
+    {}
+    if is_sqlite
+    else {"pool_pre_ping": True, "pool_recycle": 300, "pool_size": 5, "max_overflow": 5}
+)
+
 engine = create_engine(
     DATABASE_URL,
     connect_args={"check_same_thread": False} if is_sqlite else {},
+    **_pool_kwargs,
 )
 SessionLocal = sessionmaker(bind=engine, autoflush=False, expire_on_commit=False)
 

@@ -4,7 +4,7 @@
 Legal Metrology (Packaged Commodities) Rules, 2011, and hands a human inspector
 a verdict with its evidence, its confidence and the clause it cites.
 
-**Last updated:** 2026-09-10 · **Suite:** 480 tests passing ·
+**Last updated:** 2026-09-10 · **Suite:** 499 tests passing ·
 **Response schema:** `labelguard-inspection/1.1`
 
 ---

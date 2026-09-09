@@ -13,7 +13,8 @@ manifest.
 | Language | Python | 3.12.13 | paddlepaddle has no wheel for 3.13+ |
 | API | FastAPI | 0.141.1 | Typed request bodies, generated OpenAPI |
 | Validation | Pydantic | 2.13.5 | Request validation is a trust boundary |
-| ORM | SQLAlchemy | 2.0.52 | Portable DSN; SQLite locally, PostgreSQL later |
+| ORM | SQLAlchemy | 2.0.52 | Portable DSN; SQLite locally, Neon Postgres in deployment |
+| Postgres driver | psycopg | 3.3.5 | Optional; only when `DATABASE_URL` is Postgres |
 | OCR | PaddleOCR | 3.7.0 | Strongest open CPU OCR for dense label text |
 | Inference | paddlepaddle | 3.3.1 | PaddleOCR's runtime |
 | Imaging | OpenCV | 4.10.0 | Quality-gate measurements |
@@ -98,7 +99,7 @@ surface to keep in step whenever the response schema moves.
 
 | Concern | Choice |
 |---|---|
-| Inspection repository | SQLite by default, via a portable SQLAlchemy DSN |
+| Inspection repository | SQLite by default; Neon serverless Postgres via `DATABASE_URL` |
 | Ruleset | JSON, 31 rules, each with severity, category and source |
 | Regulation corpus | JSON per document, 37 chunks, every one page-referenced |
 | Audit log | Append-only table |
@@ -132,7 +133,7 @@ their thinking against `max_tokens`, so `reasoning_effort` is set low.
 | Purpose | Tool |
 |---|---|
 | Python environment | `uv`, pinned to 3.12 in `.venv312` |
-| Tests | pytest, 480 tests |
+| Tests | pytest, 499 tests |
 | Frontend package manager | npm |
 | Version control | git |
 

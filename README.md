@@ -87,6 +87,31 @@ Model availability varies by Groq account. List what a key can reach with
 | `OCR_PROFILE`              | `fast` or `accurate` OCR models                      |
 | `DATABASE_URL`             | Inspection repository, SQLite by default             |
 
+## Database
+
+SQLite by default, no configuration needed. For Postgres, including serverless
+Postgres such as Neon, set a DSN and install the driver:
+
+```bash
+pip install "psycopg[binary]"
+```
+
+```bash
+DATABASE_URL=postgresql+psycopg://USER:PASSWORD@HOST/DBNAME?sslmode=require
+```
+
+The schema is created on first start; there is no migration step. Use the
+provider's *pooled* host when it offers one.
+
+Serverless Postgres suspends an idle compute and drops its connections, so a
+pooled connection handed out afterwards is dead and the first query on it
+raises instead of reconnecting. The engine therefore sets `pool_pre_ping` and a
+300-second `pool_recycle` for every non-SQLite DSN. Without those, the first
+request after an idle period fails.
+
+The test suite always redirects `DATABASE_URL` to a temporary SQLite file, so
+running it never touches a configured Postgres database.
+
 ## Tests
 
 ```bash
