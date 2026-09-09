@@ -92,3 +92,13 @@ Model availability varies by Groq account. List what a key can reach with
 ```bash
 .venv312/Scripts/python.exe -m pytest -q
 ```
+
+## Documentation
+
+| Document | What it covers |
+| -------- | -------------- |
+| [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) | What the system does, how an inspection runs, what it refuses to do |
+| [TECH_STACK.md](TECH_STACK.md) | What it is built from, and why each choice was made |
+| [REMAINING.md](REMAINING.md) | Every requirement mapped to built or not-built, measured |
+| [web/README.md](web/README.md) | The React frontend |
+| [prd.md](prd.md) | The original requirements |
