@@ -24,6 +24,12 @@ os.environ["DATABASE_URL"] = f"sqlite:///{_TEST_DB.as_posix()}"
 os.environ.setdefault("AUTH_ENABLED", "false")
 os.environ.setdefault("AUTH_SECRET_KEY", "test-secret-key-not-for-production")
 
+# No test may call a paid API or depend on whether a developer happens to have
+# a key in .env. Importing the app loads .env, so this is cleared here and the
+# generation path is exercised with stubs instead.
+os.environ.pop("GROQ_API_KEY", None)
+os.environ["LABELSURE_DISABLE_DOTENV"] = "1"
+
 import pytest
 
 

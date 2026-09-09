@@ -30,6 +30,17 @@ MANUAL_VERIFICATION_NOTE = (
     "imagery alone and require physical verification of the package."
 )
 
+# Returned by regulatory question-answering when retrieval brings back nothing
+# usable. Saying so is the correct answer; generating plausible statutory prose
+# off a weak match is the failure mode this wording exists to prevent.
+INSUFFICIENT_BASIS = (
+    "No provision in the indexed regulation corpus answers this question "
+    "with sufficient confidence. Consult the Legal Metrology (Packaged "
+    "Commodities) Rules, 2011 directly, or a Legal Metrology officer. No "
+    "answer has been generated, because generating one here would not be "
+    "grounded in the corpus."
+)
+
 
 def disclaimer_block(markdown: bool = True) -> str:
     """The disclaimer rendered for a text/markdown report."""

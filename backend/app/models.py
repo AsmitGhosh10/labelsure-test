@@ -1,5 +1,5 @@
 from typing import Any, Dict, List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class QualityResponse(BaseModel):
@@ -121,3 +121,14 @@ class RegulationSearchRequest(BaseModel):
     top_k: int = 5
     category: Optional[str] = None
     rule_reference: Optional[str] = None
+
+
+class RAGAskRequest(BaseModel):
+    """A natural-language question against the regulation corpus."""
+
+    query: str = Field(..., min_length=1, max_length=500)
+    k: int = Field(default=5, ge=1, le=20)
+    use_reranker: bool = True
+    category: Optional[str] = None
+    temperature: float = Field(default=0.2, ge=0.0, le=1.0)
+    max_tokens: int = Field(default=512, ge=50, le=2048)

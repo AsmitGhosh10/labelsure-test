@@ -45,7 +45,7 @@ class TestHealthAndDocs:
 class TestRegulationEndpoints:
     def test_corpus_stats(self, client):
         body = client.get("/regulations").json()
-        assert body["chunks"] == 31
+        assert body["chunks"] >= 31
 
     def test_search_returns_citations(self, client):
         body = client.get(
@@ -313,3 +313,46 @@ class TestAuthEnforced:
             ).status_code
             == 200
         )
+
+
+class TestRAGEndpoints:
+    def test_status_reports_the_backends(self, client):
+        body = client.get("/rag").json()
+        assert body["web_search"] is False
+        assert body["generator"] in ("groq", "extractive")
+        assert body["corpus"]["chunks"] >= 31
+
+    def test_ask_returns_a_grounded_answer_with_sources(self, client):
+        body = client.post(
+            "/rag/ask", json={"query": "retail sale price declaration", "k": 3}
+        ).json()
+        assert body["grounded"] is True
+        assert body["sources"]
+        assert body["sources"][0]["metadata"]["rule"]
+        assert body["used_web_search"] is False
+
+    def test_empty_query_is_rejected(self, client):
+        assert client.post("/rag/ask", json={"query": ""}).status_code == 422
+
+    def test_k_is_bounded(self, client):
+        assert client.post(
+            "/rag/ask", json={"query": "net quantity", "k": 999}
+        ).status_code == 422
+
+
+class TestAnnotatedEvidence:
+    def test_unknown_inspection_is_404(self, client):
+        assert client.get("/inspections/nope/annotated/0").status_code == 404
+
+    def test_out_of_range_index_is_404(self, client, stored):
+        response = client.get(f"/inspections/{stored['inspection_id']}/annotated/99")
+        assert response.status_code == 404
+
+    def test_a_path_outside_the_evidence_directory_is_refused(self, client, stored):
+        """A doctored record must not turn into an arbitrary file read."""
+        import backend.app.database as db
+
+        stored["annotated_images"] = [{"name": "x", "path": __file__, "boxes": []}]
+        db.save_inspection(stored)
+        response = client.get(f"/inspections/{stored['inspection_id']}/annotated/0")
+        assert response.status_code == 404

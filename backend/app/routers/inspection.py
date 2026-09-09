@@ -226,6 +226,30 @@ def get_pdf_report(inspection_id: str):
     )
 
 
+@router.get("/inspections/{inspection_id}/annotated/{index}")
+def get_annotated_image(inspection_id: str, index: int):
+    """Serve one annotated evidence image for a stored inspection.
+
+    The stored inspection records absolute-ish paths written by the annotation
+    service. Those paths came from our own pipeline, but a stored record is
+    still data, so the resolved file must sit inside the evidence directory
+    before it is served - otherwise a doctored record could read any file on
+    the host.
+    """
+    result = database.get_inspection(inspection_id)
+    if result is None:
+        raise HTTPException(status_code=404, detail="Inspection not found")
+    images = result.get("annotated_images") or []
+    if index < 0 or index >= len(images):
+        raise HTTPException(status_code=404, detail="No such annotated image")
+
+    path = os.path.realpath(images[index].get("path", ""))
+    root = os.path.realpath(get_pipeline().evidence_dir)
+    if not path.startswith(root + os.sep) or not os.path.isfile(path):
+        raise HTTPException(status_code=404, detail="Annotated image is unavailable")
+    return FileResponse(path, media_type="image/jpeg")
+
+
 @router.post("/assess-quality", response_model=QualityResponse)
 def assess_quality(upload: UploadFile = File(...), pipeline: InspectionPipeline = Depends(get_pipeline)):
     path = _save_upload(upload)

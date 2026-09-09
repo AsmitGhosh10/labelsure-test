@@ -1,6 +1,17 @@
 import os
 from contextlib import asynccontextmanager
 
+# Load .env before importing anything that reads os.environ at import time
+# (GROQ_MODEL, OCR_*, AUTH_*). Real environment variables win over the file,
+# so a deployment's own configuration is never overridden by a stray .env.
+if not os.environ.get("LABELSURE_DISABLE_DOTENV"):
+    try:
+        from dotenv import load_dotenv
+
+        load_dotenv(override=False)
+    except ImportError:  # optional; plain env vars work without it
+        pass
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -8,6 +19,7 @@ from backend.app import auth, database
 from backend.app.routers.auth_router import router as auth_api_router
 from backend.app.routers.dashboard import router as dashboard_router
 from backend.app.routers.inspection import router as inspection_router
+from backend.app.routers.rag import router as rag_router
 from backend.app.routers.regulations import router as regulations_router
 from backend.app.routers.review import router as review_router
 from backend.app.services import legal
@@ -55,6 +67,7 @@ app.include_router(inspection_router, tags=["inspection"])
 app.include_router(review_router, tags=["human-in-the-loop"])
 app.include_router(dashboard_router, tags=["dashboard"])
 app.include_router(regulations_router, tags=["regulations"])
+app.include_router(rag_router, tags=["rag"])
 app.include_router(auth_api_router, tags=["auth"])
 
 
