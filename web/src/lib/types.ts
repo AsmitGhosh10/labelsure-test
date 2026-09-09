@@ -291,6 +291,16 @@ export interface RagStatus {
   disclaimer: string
 }
 
+/** One day of the dashboard trend. The API names the total `total`, and
+ *  breaks it down by decision. */
+export interface DailyTrendPoint {
+  date: string
+  total: number
+  COMPLIANT: number
+  NON_COMPLIANT: number
+  MANUAL_REVIEW: number
+}
+
 export interface Stats {
   total_inspections: number
   compliant: number
@@ -303,7 +313,7 @@ export interface Stats {
   by_category: Record<string, number>
   common_violations: { rule_id: string; count: number }[]
   manufacturer_trends: unknown[]
-  daily_trend: { date: string; count: number }[]
+  daily_trend: DailyTrendPoint[]
   human_reviewed: number
   overrides: number
   override_rate: number | null

@@ -20,7 +20,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { api, ApiError } from "@/lib/api"
-import type { Stats, ViolationRow } from "@/lib/types"
+import type { DailyTrendPoint, Stats, ViolationRow } from "@/lib/types"
 
 export function DashboardPage() {
   const [stats, setStats] = useState<Stats | null>(null)
@@ -200,27 +200,68 @@ function Metric({
 }
 
 /**
- * A minimal bar strip.
+ * Daily screening volume, stacked by outcome.
  *
- * A charting library would be a dependency for one chart of one series, so this
- * is plain divs. Swap in a real chart when a second series appears.
+ * Plain divs rather than a charting dependency: one chart of one series does
+ * not justify the weight. Heights are computed in pixels against a fixed plot
+ * height, because a percentage height inside an auto-height flex column
+ * resolves to zero - which is exactly how this rendered as an empty box
+ * before.
  */
-function BarStrip({ data }: { data: { date: string; count: number }[] }) {
-  const max = Math.max(...data.map((d) => d.count), 1)
+const PLOT_HEIGHT = 160
+
+const SEGMENTS = [
+  { key: "COMPLIANT", label: "Compliant", className: "bg-emerald-600" },
+  { key: "NON_COMPLIANT", label: "Non-compliant", className: "bg-red-600" },
+  { key: "MANUAL_REVIEW", label: "Manual review", className: "bg-amber-500" },
+] as const
+
+function BarStrip({ data }: { data: DailyTrendPoint[] }) {
+  if (data.length === 0) return null
+  const max = Math.max(...data.map((d) => d.total), 1)
+
   return (
-    <div className="flex h-40 items-end gap-1.5 overflow-x-auto">
-      {data.map((day) => (
-        <div key={day.date} className="flex min-w-8 flex-1 flex-col items-center gap-1.5">
+    <div className="flex flex-col gap-4">
+      <div className="flex items-end gap-2 overflow-x-auto pb-1" style={{ height: PLOT_HEIGHT + 28 }}>
+        {data.map((day) => (
           <div
-            className="bg-primary/80 w-full rounded-t-sm"
-            style={{ height: `${(day.count / max) * 100}%` }}
-            title={`${day.date}: ${day.count}`}
-          />
-          <span className="text-muted-foreground text-[10px] whitespace-nowrap">
-            {day.date.slice(5)}
+            key={day.date}
+            className="flex min-w-10 flex-1 flex-col items-center justify-end gap-1.5"
+          >
+            <span className="text-xs font-medium tabular-nums">{day.total}</span>
+            <div
+              className="flex w-full max-w-16 flex-col-reverse overflow-hidden rounded-sm"
+              style={{ height: (day.total / max) * PLOT_HEIGHT }}
+              title={`${day.date}: ${day.total} screening(s)`}
+            >
+              {SEGMENTS.map((segment) => {
+                const value = day[segment.key]
+                if (!value) return null
+                return (
+                  <div
+                    key={segment.key}
+                    className={segment.className}
+                    style={{ flexGrow: value }}
+                    title={`${segment.label}: ${value}`}
+                  />
+                )
+              })}
+            </div>
+            <span className="text-muted-foreground text-[10px] whitespace-nowrap">
+              {day.date.slice(5)}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      <div className="text-muted-foreground flex flex-wrap gap-4 text-xs">
+        {SEGMENTS.map((segment) => (
+          <span key={segment.key} className="flex items-center gap-1.5">
+            <span className={`size-2.5 rounded-sm ${segment.className}`} />
+            {segment.label}
           </span>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   )
 }
