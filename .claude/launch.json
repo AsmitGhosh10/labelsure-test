@@ -2,24 +2,10 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "scanner-ui",
-      "runtimeExecutable": ".venv312/Scripts/python.exe",
-      "runtimeArgs": ["frontend/app.py"],
-      "port": 7860
-    },
-    {
-      "name": "scanner-api",
-      "runtimeExecutable": ".venv312/Scripts/python.exe",
-      "runtimeArgs": [
-        "-m",
-        "uvicorn",
-        "backend.app.main:app",
-        "--host",
-        "127.0.0.1",
-        "--port",
-        "8000"
-      ],
-      "port": 8000
+      "name": "web",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "web"],
+      "port": 5174
     }
   ]
 }
