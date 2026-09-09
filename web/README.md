@@ -34,7 +34,7 @@ same prefix-stripping rule the dev proxy uses.
 | `/inspect`          | Upload or photograph up to six surfaces and run a screening        |
 | `/inspections/:id`  | A stored screening, with evidence and sign-off                     |
 | `/ask`              | Regulation question answering (RAG) with citations                 |
-| `/regulations`      | Keyword and lexical-vector search over the regulation corpus       |
+| `/regulations`      | Search the corpus, or open a document to read its clauses          |
 | `/queue`            | The sign-off backlog, least confident first                        |
 | `/dashboard`        | Repository statistics (supervisor role)                            |
 

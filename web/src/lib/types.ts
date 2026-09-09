@@ -205,9 +205,10 @@ export interface InspectionSummary {
 
 /** One retrieved regulation clause from `/regulations/search`. */
 export interface RegulationHit {
-  score: number
-  keyword_score: number
-  vector_score: number
+  /** Null when browsing a document: there is no query, so nothing is ranked. */
+  score: number | null
+  keyword_score: number | null
+  vector_score: number | null
   chunk_id: string
   rule_reference: string
   title: string
@@ -218,9 +219,20 @@ export interface RegulationHit {
 
 export interface RegulationSearchResponse {
   query: string
+  /** Set when the results were scoped to, or browsed from, one document. */
+  document?: string | null
   count: number
   results: RegulationHit[]
   note: string | null
+}
+
+/** One indexed document, with how much of the corpus it contributes. */
+export interface CorpusDocument {
+  document: string
+  chunks: number
+  source_type: string
+  effective_date: string | null
+  url: string | null
 }
 
 export interface CorpusStats {

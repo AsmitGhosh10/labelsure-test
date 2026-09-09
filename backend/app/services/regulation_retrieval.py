@@ -353,6 +353,7 @@ class RegulationRetriever:
         category: Optional[str] = None,
         rule_reference: Optional[str] = None,
         source_type: Optional[str] = None,
+        document: Optional[str] = None,
         min_score: float = 0.0,
     ) -> List[Dict[str, Any]]:
         """Hybrid retrieval with metadata filtering.
@@ -376,6 +377,8 @@ class RegulationRetriever:
             candidates = [c for c in candidates if needle in c.rule_reference.lower()]
         if source_type:
             candidates = [c for c in candidates if c.source_type == source_type]
+        if document:
+            candidates = [c for c in candidates if c.document == document]
         candidates = list(candidates)
         if not candidates:
             return []
@@ -463,6 +466,50 @@ class RegulationRetriever:
         return citations
 
     # ------------------------------------------------------------------
+
+    def list_by_document(self, document: str) -> List[Dict[str, Any]]:
+        """Every clause of one document, in the order it appears in the source.
+
+        This is browsing, not searching: there is no query and no ranking, so
+        the result is ordered by page and then by the position the chunk was
+        loaded in, which is the order of the document itself.
+        """
+        chunks = [c for c in self.chunks if c.document == document]
+        chunks.sort(key=lambda c: (c.page if c.page is not None else 10**6,))
+        return [
+            {
+                "chunk_id": c.chunk_id,
+                "rule_reference": c.rule_reference,
+                "title": c.title,
+                "category": c.category,
+                "text": c.text,
+                "citation": c.citation(),
+                "score": None,
+                "keyword_score": None,
+                "vector_score": None,
+            }
+            for c in chunks
+        ]
+
+    def documents(self) -> List[Dict[str, Any]]:
+        """The indexed documents, with how much of the corpus each contributes."""
+        counts: Dict[str, Dict[str, Any]] = {}
+        for chunk in self.chunks:
+            entry = counts.setdefault(
+                chunk.document,
+                {
+                    "document": chunk.document,
+                    "chunks": 0,
+                    "source_type": chunk.source_type,
+                    "effective_date": chunk.effective_date,
+                    "url": None,
+                },
+            )
+            entry["chunks"] += 1
+            # Any chunk that carries a source URL speaks for the document.
+            if chunk.url and not entry["url"]:
+                entry["url"] = chunk.url
+        return sorted(counts.values(), key=lambda d: d["document"])
 
     def stats(self) -> Dict[str, Any]:
         documents = sorted({c.document for c in self.chunks})

@@ -13,6 +13,7 @@
 
 import type {
   ChatTurn,
+  CorpusDocument,
   CorpusStats,
   HealthResponse,
   Inspection,
@@ -144,9 +145,17 @@ export const api = {
 
   // --- regulations --------------------------------------------------------
   corpusStats: () => request<CorpusStats>("/regulations"),
-  searchRegulations: (query: string, topK = 5) =>
+  corpusDocuments: () =>
+    request<{ documents: CorpusDocument[] }>("/regulations/documents"),
+  searchRegulations(query: string, topK = 5, document?: string) {
+    const params = new URLSearchParams({ q: query, top_k: String(topK) })
+    if (document) params.set("document", document)
+    return request<RegulationSearchResponse>(`/regulations/search?${params}`)
+  },
+  /** Browse one document: every clause, in source order, unranked. */
+  browseDocument: (document: string) =>
     request<RegulationSearchResponse>(
-      `/regulations/search?q=${encodeURIComponent(query)}&top_k=${topK}`,
+      `/regulations/search?q=&document=${encodeURIComponent(document)}`,
     ),
 
   // --- RAG ----------------------------------------------------------------

@@ -21,20 +21,49 @@ def corpus_stats():
     return get_retriever().stats()
 
 
+@router.get("/regulations/documents")
+def list_documents():
+    """The indexed documents, with how much of the corpus each contributes."""
+    return {"documents": get_retriever().documents()}
+
+
 @router.get("/regulations/search")
 def search_regulations(
-    q: str,
+    q: str = "",
     top_k: int = 5,
     category: Optional[str] = None,
     rule_reference: Optional[str] = None,
+    document: Optional[str] = None,
 ):
+    """Search the corpus, or browse one document when no query is given.
+
+    An empty query with a `document` is a browse, not a failed search: it
+    returns that document's clauses in source order, unranked.
+    """
+    retriever = get_retriever()
+
     if not q.strip():
-        raise HTTPException(status_code=422, detail="Query 'q' must not be empty")
-    hits = get_retriever().search(
-        q, top_k=top_k, category=category, rule_reference=rule_reference
+        if not document:
+            raise HTTPException(status_code=422, detail="Query 'q' must not be empty")
+        results = retriever.list_by_document(document)
+        return {
+            "query": "",
+            "document": document,
+            "count": len(results),
+            "results": results,
+            "note": None if results else f"No clauses indexed for {document}",
+        }
+
+    hits = retriever.search(
+        q,
+        top_k=top_k,
+        category=category,
+        rule_reference=rule_reference,
+        document=document,
     )
     return {
         "query": q,
+        "document": document,
         "count": len(hits),
         "results": hits,
         "note": (
@@ -52,6 +81,7 @@ def search_regulations_post(payload: RegulationSearchRequest):
         top_k=payload.top_k,
         category=payload.category,
         rule_reference=payload.rule_reference,
+        document=payload.document,
     )
 
 

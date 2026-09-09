@@ -121,6 +121,7 @@ class RegulationSearchRequest(BaseModel):
     top_k: int = 5
     category: Optional[str] = None
     rule_reference: Optional[str] = None
+    document: Optional[str] = None
 
 
 class ChatTurn(BaseModel):

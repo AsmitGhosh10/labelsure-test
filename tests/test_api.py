@@ -356,3 +356,56 @@ class TestAnnotatedEvidence:
         db.save_inspection(stored)
         response = client.get(f"/inspections/{stored['inspection_id']}/annotated/0")
         assert response.status_code == 404
+
+
+class TestDocumentBrowsing:
+    LMPCR = "The Legal Metrology (Packaged Commodities) Rules, 2011"
+
+    def test_documents_are_listed_with_their_share_of_the_corpus(self, client):
+        body = client.get("/regulations/documents").json()
+        names = {d["document"]: d for d in body["documents"]}
+        assert self.LMPCR in names
+        assert names[self.LMPCR]["chunks"] == 31
+
+    def test_a_document_can_be_browsed_without_a_query(self, client):
+        body = client.get(
+            "/regulations/search", params={"q": "", "document": self.LMPCR}
+        ).json()
+        assert body["count"] == 31
+        assert body["document"] == self.LMPCR
+
+    def test_a_browsed_clause_carries_no_score(self, client):
+        """Browsing is not searching: nothing was ranked."""
+        body = client.get(
+            "/regulations/search", params={"q": "", "document": self.LMPCR}
+        ).json()
+        assert body["results"][0]["score"] is None
+
+    def test_browsing_is_ordered_by_page(self, client):
+        body = client.get(
+            "/regulations/search", params={"q": "", "document": self.LMPCR}
+        ).json()
+        pages = [r["citation"]["page"] for r in body["results"]]
+        assert pages == sorted(pages)
+
+    def test_search_can_be_scoped_to_one_document(self, client):
+        body = client.get(
+            "/regulations/search",
+            params={"q": "price", "top_k": 10, "document": self.LMPCR},
+        ).json()
+        assert body["count"] > 0
+        assert all(r["citation"]["document"] == self.LMPCR for r in body["results"])
+
+    def test_an_empty_query_with_no_document_is_still_rejected(self, client):
+        assert client.get("/regulations/search", params={"q": "  "}).status_code == 422
+
+    def test_an_unknown_document_is_empty_with_a_note(self, client):
+        body = client.get(
+            "/regulations/search", params={"q": "", "document": "No Such Gazette"}
+        ).json()
+        assert body["count"] == 0
+        assert "No clauses indexed" in body["note"]
+
+    def test_the_documents_route_is_not_read_as_a_rule_id(self, client):
+        """/regulations/documents must not match /regulations/{rule_id}."""
+        assert client.get("/regulations/documents").status_code == 200
