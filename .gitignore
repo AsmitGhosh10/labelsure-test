@@ -77,3 +77,9 @@ reports/inspections/evidence/
 inspections.db
 demo_inspections.db
 *.db-journal
+
+# Agent tooling that is machine-local. The skills themselves live in
+# .agents/skills and are committed; .claude/skills is only absolute symlinks
+# into it, which would not resolve on another machine.
+.claude/skills/
+.reticle/
