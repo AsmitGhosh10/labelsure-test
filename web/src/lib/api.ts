@@ -12,6 +12,7 @@
  */
 
 import type {
+  ChatTurn,
   CorpusStats,
   HealthResponse,
   Inspection,
@@ -150,8 +151,12 @@ export const api = {
 
   // --- RAG ----------------------------------------------------------------
   ragStatus: () => request<RagStatus>("/rag"),
-  ask: (body: { query: string; k?: number; use_reranker?: boolean }) =>
-    request<RagAnswer>("/rag/ask", { method: "POST", body: JSON.stringify(body) }),
+  ask: (body: {
+    query: string
+    k?: number
+    use_reranker?: boolean
+    history?: ChatTurn[]
+  }) => request<RagAnswer>("/rag/ask", { method: "POST", body: JSON.stringify(body) }),
 
   // --- dashboard ----------------------------------------------------------
   stats: () => request<Stats>("/stats"),

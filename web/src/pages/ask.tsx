@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/input-group"
 import { Spinner } from "@/components/ui/spinner"
 import { api, ApiError } from "@/lib/api"
-import type { RagAnswer, RagStatus } from "@/lib/types"
+import type { ChatTurn, RagAnswer, RagStatus } from "@/lib/types"
 
 const EXAMPLES = [
   "What must be declared as the retail sale price on a pre-packaged commodity?",
@@ -59,9 +59,19 @@ export function AskPage() {
     if (!query || busy) return
     setBusy(true)
     setQuestion("")
+    // Send the exchange so far, so a follow-up like "and for imports?" has
+    // something to refer back to. Only completed turns count.
+    const history: ChatTurn[] = turns.flatMap((turn) =>
+      turn.answer
+        ? [
+            { role: "user" as const, content: turn.question },
+            { role: "assistant" as const, content: turn.answer.answer },
+          ]
+        : [],
+    )
     setTurns((current) => [...current, { question: query, answer: null }])
     try {
-      const answer = await api.ask({ query, k: 5 })
+      const answer = await api.ask({ query, k: 5, history })
       setTurns((current) =>
         current.map((turn, i) => (i === current.length - 1 ? { ...turn, answer } : turn)),
       )
@@ -84,9 +94,11 @@ export function AskPage() {
       <header className="flex flex-col gap-2">
         <h1 className="text-3xl font-semibold tracking-tight">Ask the rules</h1>
         <p className="text-muted-foreground">
-          Questions are answered from the indexed Legal Metrology corpus, with the
-          clauses that support the answer. When retrieval finds nothing solid, the
-          system says so instead of composing statutory-sounding prose.
+          Ask about the packaged commodities rules and the answer comes from the
+          indexed corpus, with the clauses that support it. Ordinary questions
+          about this tool are answered too. When the corpus does not cover
+          something, the assistant says so instead of composing
+          statutory-sounding prose.
         </p>
         {status && (
           <div className="flex flex-wrap items-center gap-2 pt-1">
@@ -108,8 +120,10 @@ export function AskPage() {
             <EmptyMedia variant="icon">
               <Sparkles />
             </EmptyMedia>
-            <EmptyTitle>Ask a question about packaged-commodity labelling</EmptyTitle>
-            <EmptyDescription>Try one of these to start.</EmptyDescription>
+            <EmptyTitle>Ask about packaged-commodity labelling</EmptyTitle>
+            <EmptyDescription>
+              Or just say hello. Try one of these to start.
+            </EmptyDescription>
           </EmptyHeader>
           <div className="flex flex-col gap-2">
             {EXAMPLES.map((example) => (
@@ -156,7 +170,7 @@ export function AskPage() {
       <div className="bg-background sticky bottom-4">
         <InputGroup>
           <InputGroupTextarea
-            placeholder="Ask about a declaration, an exemption, a date format…"
+            placeholder="Ask about a declaration, an exemption, or how this tool works…"
             value={question}
             rows={2}
             onChange={(e) => setQuestion(e.target.value)}
@@ -195,14 +209,9 @@ function AnswerCard({ answer }: { answer: RagAnswer }) {
   if (answer.intent !== "regulation") {
     return (
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Sparkles className="text-primary size-5" />
-            {answer.intent === "capability" ? "About this assistant" : "Ask me about the rules"}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="text-sm leading-relaxed whitespace-pre-wrap">
-          {answer.answer}
+        <CardContent className="flex gap-3 py-5 text-sm leading-relaxed whitespace-pre-wrap">
+          <Sparkles className="text-primary mt-0.5 size-4 shrink-0" />
+          <span>{answer.answer}</span>
         </CardContent>
       </Card>
     )

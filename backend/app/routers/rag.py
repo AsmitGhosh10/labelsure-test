@@ -32,6 +32,7 @@ def rag_ask(payload: RAGAskRequest) -> Dict[str, Any]:
             category=payload.category,
             temperature=payload.temperature,
             max_tokens=payload.max_tokens,
+            history=[turn.model_dump() for turn in payload.history],
         )
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc

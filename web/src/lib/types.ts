@@ -258,9 +258,15 @@ export interface RagSource {
   }
 }
 
-/** What the input was: a corpus question, a greeting, or a question about
- *  this tool. Only "regulation" reaches retrieval. */
-export type RagIntent = "regulation" | "smalltalk" | "capability"
+/** How the assistant read the message. Only a "regulation" reply is held to
+ *  the grounding gate and shown with citations. */
+export type RagIntent = "regulation" | "conversation" | "out_of_scope"
+
+/** One prior turn, sent back so a follow-up question can resolve. */
+export interface ChatTurn {
+  role: "user" | "assistant"
+  content: string
+}
 
 export interface RagAnswer {
   query: string

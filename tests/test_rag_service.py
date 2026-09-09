@@ -14,6 +14,8 @@ from backend.app.services.rag_service import (
     _CrossEncoderReranker,
     _extractive_answer,
     _GroqGenerator,
+    _parse_envelope,
+    _retrieval_query,
     _rrf_fuse,
     get_rag_service,
 )
@@ -67,6 +69,25 @@ class _StubRetriever:
 
     def stats(self):
         return {"chunks": len(self._hits)}
+
+
+class _StubGenerator(_GroqGenerator):
+    """A generator that returns a fixed classification and reply."""
+
+    def __init__(self, kind, answer):
+        super().__init__(api_key="stub")
+        self._kind = kind
+        self._answer = answer
+        self.seen_history = None
+
+    @property
+    def available(self):
+        return True
+
+    def converse(self, query, context, history, temperature, max_tokens):
+        self.seen_history = history
+        self.seen_context = context
+        return self._kind, self._answer
 
 
 def _service(**kwargs):
@@ -152,17 +173,20 @@ class TestExtractiveFallback:
 
 class TestGeneration:
     def test_a_working_generator_is_used_and_labelled(self):
-        class _OK(_GroqGenerator):
-            def generate(self, *a, **k):
-                return "Rule 6(1)(e) requires the retail sale price."
-
-        result = _service(generator=_OK(api_key="x")).ask("retail sale price")
+        result = _service(
+            generator=_StubGenerator("regulation", "Rule 6(1)(e) requires the price.")
+        ).ask("retail sale price")
         assert result["generator"] == "groq"
         assert result["answer"].startswith("Rule 6(1)(e)")
+        assert result["intent"] == "regulation"
 
     def test_a_failing_generator_falls_back_without_losing_citations(self):
         class _Broken(_GroqGenerator):
-            def generate(self, *a, **k):
+            @property
+            def available(self):
+                return True
+
+            def converse(self, *a, **k):
                 return None
 
         result = _service(generator=_Broken(api_key="x")).ask("retail sale price")
@@ -385,8 +409,9 @@ class TestIntentClassification:
         assert classify_intent(query) == "regulation"
 
     def test_a_greeting_gets_guidance_not_a_statutory_refusal(self):
+        """With no model configured, the lexical fallback still diverts."""
         result = _service().ask("hey")
-        assert result["intent"] == "smalltalk"
+        assert result["intent"] == "conversation"
         assert result["answer"] != legal.INSUFFICIENT_BASIS
         assert "retail sale price" in result["answer"]
         assert result["sources"] == []
@@ -394,7 +419,7 @@ class TestIntentClassification:
     def test_a_capability_question_is_not_answered_from_the_corpus(self):
         """'What can you do' must not come back as a quantity-declaration rule."""
         result = _service().ask("what can you do")
-        assert result["intent"] == "capability"
+        assert result["intent"] == "conversation"
         assert result["sources"] == []
         assert result["generator"] == "none"
         assert "does not decide compliance" in result["answer"]
@@ -405,7 +430,160 @@ class TestIntentClassification:
     def test_every_answer_reports_an_intent(self):
         for query in ("hey", "what can you do", "retail sale price"):
             assert _service().ask(query)["intent"] in {
-                "smalltalk",
-                "capability",
+                "conversation",
+                "out_of_scope",
                 "regulation",
             }
+
+
+class TestConversationalMode:
+    """With a model configured, one call classifies and replies."""
+
+    def test_conversation_carries_no_citations(self):
+        service = _service(
+            generator=_StubGenerator("conversation", "Hello. Ask me about labelling.")
+        )
+        result = service.ask("hey")
+        assert result["intent"] == "conversation"
+        assert result["sources"] == []
+        assert result["confidence"] == 0.0
+        assert result["answer"].startswith("Hello")
+
+    def test_out_of_scope_is_reported_as_such(self):
+        service = _service(
+            generator=_StubGenerator("out_of_scope", "I don't write code.")
+        )
+        result = service.ask("write me a python web scraper")
+        assert result["intent"] == "out_of_scope"
+        assert result["sources"] == []
+        assert result["grounded"] is False
+
+    def test_a_regulation_reply_keeps_its_citations(self):
+        service = _service(
+            generator=_StubGenerator("regulation", "Rule 6(1)(e) requires the price.")
+        )
+        result = service.ask("retail sale price")
+        assert result["grounded"] is True
+        assert result["sources"]
+        assert result["confidence"] > 0
+
+    def test_weak_retrieval_discards_the_model_reply(self, monkeypatch):
+        """The model must not talk its way past the grounding gate."""
+        monkeypatch.setattr(
+            "backend.app.services.rag_service.MIN_GROUNDING_SCORE", 0.99
+        )
+        service = _service(
+            generator=_StubGenerator("regulation", "Rule 99 says whatever I like.")
+        )
+        result = service.ask("retail sale price")
+        assert result["grounded"] is False
+        assert result["answer"] == legal.INSUFFICIENT_BASIS
+        assert "Rule 99" not in result["answer"]
+
+    def test_conversation_is_not_gated_by_retrieval(self, monkeypatch):
+        """A greeting must not be refused for lack of a matching clause."""
+        monkeypatch.setattr(
+            "backend.app.services.rag_service.MIN_GROUNDING_SCORE", 0.99
+        )
+        result = _service(generator=_StubGenerator("conversation", "Hi there.")).ask(
+            "hey"
+        )
+        assert result["answer"] == "Hi there."
+
+    def test_history_reaches_the_model(self):
+        generator = _StubGenerator("conversation", "Yes.")
+        history = [
+            {"role": "user", "content": "what is the price rule"},
+            {"role": "assistant", "content": "Rule 6(1)(e)."},
+        ]
+        _service(generator=generator).ask("and for imports?", history=history)
+        assert generator.seen_history == history
+
+    def test_retrieved_clauses_reach_the_model(self):
+        generator = _StubGenerator("regulation", "answer")
+        _service(generator=generator).ask("retail sale price")
+        assert "Rule 6(1)(e)" in generator.seen_context
+
+    def test_every_reply_carries_the_disclaimer(self):
+        for kind in ("regulation", "conversation", "out_of_scope"):
+            result = _service(generator=_StubGenerator(kind, "text")).ask("anything")
+            assert result["disclaimer"] == legal.DISCLAIMER
+
+
+class TestEnvelopeParsing:
+    def test_a_clean_envelope_parses(self):
+        assert _parse_envelope('{"kind": "conversation", "answer": "hi"}') == (
+            "conversation",
+            "hi",
+        )
+
+    def test_an_envelope_wrapped_in_a_code_fence_parses(self):
+        raw = 'Here you go:\n```json\n{"kind": "out_of_scope", "answer": "no"}\n```'
+        assert _parse_envelope(raw) == ("out_of_scope", "no")
+
+    def test_prose_falls_back_to_the_strictest_kind(self):
+        """Failing to the grounded path is the safe direction."""
+        assert _parse_envelope("Rule 6 requires a price.") == (
+            "regulation",
+            "Rule 6 requires a price.",
+        )
+
+    def test_an_unknown_kind_falls_back(self):
+        kind, _ = _parse_envelope('{"kind": "banana", "answer": "x"}')
+        assert kind == "regulation"
+
+    def test_an_empty_answer_falls_back(self):
+        kind, answer = _parse_envelope('{"kind": "conversation", "answer": ""}')
+        assert kind == "regulation"
+        assert answer
+
+
+class TestFollowUpRetrieval:
+    """A follow-up carries its subject in the previous turn."""
+
+    def test_no_history_leaves_the_query_alone(self):
+        assert _retrieval_query("net quantity", None) == "net quantity"
+        assert _retrieval_query("net quantity", []) == "net quantity"
+
+    def test_recent_user_turns_are_appended(self):
+        history = [
+            {"role": "user", "content": "what is the retail sale price rule"},
+            {"role": "assistant", "content": "Rule 6(1)(e)."},
+        ]
+        expanded = _retrieval_query("and for imports?", history)
+        assert expanded.startswith("and for imports?"), "the live question leads"
+        assert "retail sale price" in expanded
+
+    def test_assistant_turns_are_not_searched(self):
+        """Searching our own prose would retrieve what we already said."""
+        history = [{"role": "assistant", "content": "zzzunique"}]
+        assert _retrieval_query("q", history) == "q"
+
+    def test_only_the_most_recent_turns_are_used(self):
+        history = [
+            {"role": "user", "content": "oldest"},
+            {"role": "user", "content": "middle"},
+            {"role": "user", "content": "newest"},
+        ]
+        expanded = _retrieval_query("now", history)
+        assert "oldest" not in expanded
+        assert "middle" in expanded and "newest" in expanded
+
+    def test_blank_turns_are_skipped(self):
+        history = [{"role": "user", "content": "   "}]
+        assert _retrieval_query("q", history) == "q"
+
+    def test_the_expanded_query_is_what_gets_searched(self):
+        class _Recording(_StubRetriever):
+            def search(self, query, **kwargs):
+                self.seen = query
+                return super().search(query, **kwargs)
+
+        retriever = _Recording()
+        RegulationRAGService(
+            retriever=retriever, generator=_GroqGenerator(api_key=None)
+        ).ask(
+            "and for imports?",
+            history=[{"role": "user", "content": "retail sale price"}],
+        )
+        assert "retail sale price" in retriever.seen
